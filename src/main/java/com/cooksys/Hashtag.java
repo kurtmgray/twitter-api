@@ -1,7 +1,9 @@
 package com.cooksys;
 
 import java.sql.Timestamp;
-import java.util.List;
+
+import java.util.Set;
+
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
@@ -26,9 +28,8 @@ public class Hashtag {
 
     private Timestamp lastUsed;
 
-
     @ManyToMany(mappedBy = "tweetHashtags")
-    private List<Tweet> tweets;
+    private Set<Tweet> tweets;
 
 
 
