@@ -17,7 +17,7 @@ import lombok.Data;
 import lombok.RequiredArgsConstructor;
 
 @Entity
-@Table(name="Account")
+@Table(name="User_Account")
 @RequiredArgsConstructor
 @Data
 public class User {
@@ -64,7 +64,7 @@ public class User {
 //		  inverseJoinColumns = {
 //				  @JoinColumn(name = "tweet_id")
 //		  }
-//	)
+//		)
 //  	private Set<Tweet> likes;
 //  
 //  	@ManyToMany
@@ -76,7 +76,7 @@ public class User {
 //		  inverseJoinColumns = {
 //				  @JoinColumn(name = "tweet_id")
 //		  }
-//	)
+//		)
 //  	private Set<Tweet> mentions;
   
 }
