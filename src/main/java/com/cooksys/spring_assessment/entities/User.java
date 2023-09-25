@@ -7,11 +7,12 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
-import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Embedded;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
+import javax.persistence.OneToMany;
+import org.hibernate.annotations.CreationTimestamp;
 
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
@@ -26,6 +27,7 @@ public class User {
   @GeneratedValue
   private Long id;
   
+  @CreationTimestamp
   final private Timestamp joined;
   
   private boolean deleted = false;
@@ -51,32 +53,31 @@ public class User {
   @ManyToMany(mappedBy="following")
   private Set<User> followers;
   
-//	@OneToMany
-//  @JoinColumn(name="author")
-//  private Set<Tweet> tweets;
-//
-//  	@ManyToMany
-//  	@JoinTable(
-//		  name="user_likes",
-//		  joinColumns = {
-//				  @JoinColumn(name = "user_id")
-//		  },
-//		  inverseJoinColumns = {
-//				  @JoinColumn(name = "tweet_id")
-//		  }
-//		)
-//  	private Set<Tweet> likes;
-//  
-//  	@ManyToMany
-//  	@JoinTable(
-//		  name="user_mentions",
-//		  joinColumns = {
-//				  @JoinColumn(name = "user_id")
-//		  },
-//		  inverseJoinColumns = {
-//				  @JoinColumn(name = "tweet_id")
-//		  }
-//		)
-//  	private Set<Tweet> mentions;
+  @OneToMany(mappedBy="author")
+  private Set<Tweet> tweets;
+
+  @ManyToMany
+  @JoinTable(
+	  name="user_likes",
+	  joinColumns = {
+			  @JoinColumn(name = "user_id")
+	  },
+	  inverseJoinColumns = {
+			  @JoinColumn(name = "tweet_id")
+	  }
+	)
+  private Set<Tweet> likes;
+  
+  @ManyToMany
+  @JoinTable(
+	  name="user_mentions",
+	  joinColumns = {
+			  @JoinColumn(name = "user_id")
+	  },
+	  inverseJoinColumns = {
+			  @JoinColumn(name = "tweet_id")
+	  }
+	)
+  private Set<Tweet> mentions;
   
 }
