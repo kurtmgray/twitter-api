@@ -6,6 +6,7 @@ import org.hibernate.annotations.CreationTimestamp;
 
 import javax.persistence.*;
 import java.sql.Timestamp;
+import java.util.Set;
 
 @Entity
 @NoArgsConstructor
@@ -17,7 +18,7 @@ public class Tweet {
     private Long id;
 
     @ManyToOne
-    @JoinColumn(name = "user_id")
+    @JoinColumn(name = "author")
     private User author;
 
     @CreationTimestamp
@@ -27,11 +28,11 @@ public class Tweet {
     private String content;
 
     @ManyToOne
-    @JoinColumn(name = "in_reply_to_id")
+    @JoinColumn(name = "inReplyTo")
     private Tweet inReplyTo;
 
     @ManyToOne
-    @JoinColumn(name = "repost_of_id")
+    @JoinColumn(name = "repostOf")
     private Tweet repostOf;
 
     @ManyToMany
@@ -52,11 +53,11 @@ public class Tweet {
     @ManyToMany(mappedBy = "mentions")
     private Set<User> usersWhoMention;
 
-    @ManyToMany
-    @JoinTable(
-            name = "tweet_hashtag",
-            joinColumns = @JoinColumn(name = "tweet_id"),
-            inverseJoinColumns = @JoinColumn(name = "hashtag_id")
-    )
-    private Set<Hashtag> tweetHashtags;
+//    @ManyToMany
+//    @JoinTable(
+//            name = "tweet_hashtag",
+//            joinColumns = @JoinColumn(name = "tweet_id"),
+//            inverseJoinColumns = @JoinColumn(name = "hashtag_id")
+//    )
+//    private Set<Hashtag> tweetHashtags;
 }
