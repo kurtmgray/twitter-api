@@ -5,6 +5,7 @@ import java.sql.Timestamp;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.NonNull;
 
 
 @NoArgsConstructor
@@ -12,11 +13,13 @@ import lombok.NoArgsConstructor;
 public class UserResponseDto {
 
     
-
+    @NonNull
     private String username;
 
+    @NonNull
     private String email;
 
+    @NonNull
     private Timestamp joined;
 
     
