@@ -19,8 +19,8 @@ public class HashtagController {
     private final TweetService tweetService;
 
 //    @GetMapping
-//    public ResponseEntity<List<HashtagDto>> getAllHashTags() {return ResponseEntity<>(hashtagService.getAllHastags(), HttpStatus.OK)};
+//    public ResponseEntity<List<Hashtag>> getAllHashTags() {return ResponseEntity<>(hashtagService.getAllHastags(), HttpStatus.OK)};
 //
 //    @GetMapping("/{label}")
-//    public ResponseEntity<List<TweetDto>> getAllTweetsWithLabel(@PathVariable String label) {return ResponseEntity<>(tweetService.getAllTweetsWithLabel(label), HttpStatus.OK)};
+//    public ResponseEntity<List<TweetResponseDto>> getAllTweetsWithLabel(@PathVariable String label) {return ResponseEntity<>(tweetService.getAllTweetsWithLabel(label), HttpStatus.OK)};
 }
