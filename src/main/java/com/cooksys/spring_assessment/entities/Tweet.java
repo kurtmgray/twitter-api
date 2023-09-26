@@ -2,6 +2,7 @@ package com.cooksys.spring_assessment.entities;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 
 import javax.persistence.*;
@@ -9,7 +10,7 @@ import java.sql.Timestamp;
 import java.util.Set;
 
 @Entity
-@NoArgsConstructor
+@RequiredArgsConstructor
 @Data
 public class Tweet {
 
@@ -22,9 +23,10 @@ public class Tweet {
     private User author;
 
     @CreationTimestamp
-    private Timestamp posted;
+    final private Timestamp posted;
 
-    private boolean deleted;
+    private boolean deleted = false;
+
     private String content;
 
     @ManyToOne

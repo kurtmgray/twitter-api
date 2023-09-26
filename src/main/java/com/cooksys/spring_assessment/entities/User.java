@@ -35,8 +35,8 @@ public class User {
   @Embedded
   private Profile profile;
 
-//@Embedded
-//private Credential credential;
+  @Embedded
+  private Credentials credentials;
   
   @ManyToMany
   @JoinTable(
