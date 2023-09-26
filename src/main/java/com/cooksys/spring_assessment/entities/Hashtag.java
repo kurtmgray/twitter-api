@@ -1,4 +1,4 @@
-package com.cooksys;
+package com.cooksys.spring_assessment.entities;
 
 import java.sql.Timestamp;
 
