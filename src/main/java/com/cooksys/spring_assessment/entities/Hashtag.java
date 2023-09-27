@@ -21,7 +21,6 @@ public class Hashtag {
     @GeneratedValue
     private Long id;
 
-
     private String label;
 
     private Timestamp firstUsed;

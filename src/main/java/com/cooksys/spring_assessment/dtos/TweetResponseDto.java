@@ -13,23 +13,17 @@ import lombok.NonNull;
 @NoArgsConstructor
 @Data
 public class TweetResponseDto {
-    
 
-  
     @NonNull
     private Integer author;
 
     @NonNull
     private Timestamp posted;
 
-    @NonNull
     private String content;
 
-    @NonNull
     private Tweet inReplyOf;
 
-    @NonNull
     private Tweet repostOf;
-
 
 }

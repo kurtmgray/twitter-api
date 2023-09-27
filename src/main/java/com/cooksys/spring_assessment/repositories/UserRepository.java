@@ -3,7 +3,7 @@ package com.cooksys.spring_assessment.repositories;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-import com.cooksys.spring_assessment.mappers.User;
+import com.cooksys.spring_assessment.entities.User;
 
 @Repository
 public interface UserRepository extends JpaRepository<User, Long> {

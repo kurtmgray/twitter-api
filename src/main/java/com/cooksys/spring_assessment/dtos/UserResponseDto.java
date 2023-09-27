@@ -12,7 +12,6 @@ import lombok.NonNull;
 @Data
 public class UserResponseDto {
 
-    
     @NonNull
     private String username;
 
@@ -22,5 +21,4 @@ public class UserResponseDto {
     @NonNull
     private Timestamp joined;
 
-    
 }
