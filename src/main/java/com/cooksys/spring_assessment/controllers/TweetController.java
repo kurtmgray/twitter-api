@@ -1,8 +1,10 @@
 package com.cooksys.spring_assessment.controllers;
 
 import com.cooksys.spring_assessment.dtos.CredentialsDto;
+import com.cooksys.spring_assessment.dtos.HashtagDto;
 import com.cooksys.spring_assessment.dtos.TweetRequestDto;
 import com.cooksys.spring_assessment.dtos.TweetResponseDto;
+import com.cooksys.spring_assessment.entities.Hashtag;
 import com.cooksys.spring_assessment.services.TweetService;
 
 import org.springframework.http.HttpStatus;
@@ -30,13 +32,28 @@ public class TweetController {
   }
 
   @GetMapping("/{id}")
-  public ResponseEntity<TweetResponseDto> getTweetById(@PathVariable Long id) {
-    return new ResponseEntity<>(tweetService.getTweetById(id), HttpStatus.OK);
+  public ResponseEntity<TweetResponseDto> getTweet(@PathVariable Long id) {
+    return new ResponseEntity<>(tweetService.getTweet(id), HttpStatus.OK);
   }
 
   @DeleteMapping("/{id}")
-  ResponseEntity<TweetResponseDto> deleteTweetById(@PathVariable Long id, @RequestBody CredentialsDto credentialsDto) {
-    return new ResponseEntity<>(tweetService.deleteTweetById(id, credentialsDto), HttpStatus.OK);
+  public ResponseEntity<TweetResponseDto> deleteTweet(@PathVariable Long id, @RequestBody CredentialsDto credentialsDto) {
+    return new ResponseEntity<>(tweetService.deleteTweet(id, credentialsDto), HttpStatus.OK);
   }
 
+  @PostMapping("/{id}/reply")
+  public ResponseEntity<TweetResponseDto> addTweetReply(@PathVariable Long id, @RequestBody TweetRequestDto tweetRequestDto) {
+    return new ResponseEntity<>(tweetService.addTweetReply(id, tweetRequestDto), HttpStatus.CREATED);
+  }
+
+  @PostMapping("/{id}/like")
+  public ResponseEntity<?> addLikeToTweet(@PathVariable Long id, @RequestBody CredentialsDto credentialsDto) {
+    tweetService.addLikeToTweet(id, credentialsDto);
+    return new ResponseEntity<>(HttpStatus.CREATED);
+  }
+
+  @GetMapping("/{id}/tags")
+  public ResponseEntity<List<HashtagDto>> getAllTagsFromTweet(@PathVariable Long id) {
+    return new ResponseEntity<>(tweetService.getAllTagsFromTweet(id), HttpStatus.OK);
+  }
 }

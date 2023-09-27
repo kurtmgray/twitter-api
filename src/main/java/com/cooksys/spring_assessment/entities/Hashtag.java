@@ -2,6 +2,7 @@ package com.cooksys.spring_assessment.entities;
 
 import java.sql.Timestamp;
 
+import java.util.List;
 import java.util.Set;
 
 import javax.persistence.*;
@@ -32,7 +33,7 @@ public class Hashtag {
     private Timestamp lastUsed;
 
     @ManyToMany(mappedBy = "tweetHashtags")
-    private Set<Tweet> tweets;
+    private List<Tweet> tweets;
 
 
 
