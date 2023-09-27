@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequiredArgsConstructor
+@RequestMapping("/validate")
 public class ValidateController {
 
   //  @GetMapping("/tag/exists/{label}")

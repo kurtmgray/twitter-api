@@ -16,7 +16,7 @@ public class UserResponseDto {
     private String username;
 
     @NonNull
-    private String email;
+    private ProfileDto profile;
 
     @NonNull
     private Timestamp joined;

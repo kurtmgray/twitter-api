@@ -21,12 +21,16 @@ public class Hashtag {
     @GeneratedValue
     private Long id;
 
+    @Column(nullable = false, unique = true)
     private String label;
 
     @Setter(AccessLevel.NONE)
     @CreationTimestamp
+    @Column(nullable = false)
     private Timestamp firstUsed;
 
+    @UpdateTimestamp
+    @Column(nullable = false)
     private Timestamp lastUsed;
 
     @ManyToMany(mappedBy = "tweetHashtags")

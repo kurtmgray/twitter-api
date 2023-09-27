@@ -11,9 +11,9 @@ import org.springframework.lang.NonNull;
 public class UserRequestDto {
 
     @NonNull
-    private Credentials credentials;
+    private CredentialsDto credentials;
 
     @NonNull
-    private Profile profile;
+    private ProfileDto profile;
 
 }
