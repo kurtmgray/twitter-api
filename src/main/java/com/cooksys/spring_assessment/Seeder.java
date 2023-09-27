@@ -1,4 +1,3 @@
-
 package com.cooksys.spring_assessment;
 
 import com.cooksys.spring_assessment.entities.Profile;
@@ -229,38 +228,40 @@ public class Seeder implements CommandLineRunner {
 
         // ----- LIST of Tweets + Adding to User# -----
         List<Tweet> user1Tweets = List.of(tweet1, tweet2);
-        user1.setTweets(new HashSet<>(user1Tweets));
+
+        user1.setTweets(user1Tweets);
         userRepository.saveAndFlush(user1);
 
         List<Tweet> user2Tweets = List.of(tweet3, tweet4);
-        user2.setTweets(new HashSet<>(user2Tweets));
+        user2.setTweets(user2Tweets);
         userRepository.saveAndFlush(user2);
 
         List<Tweet> user3Tweets = List.of(tweet5, tweet6);
-        user3.setTweets(new HashSet<>(user3Tweets));
+        user3.setTweets(user3Tweets);
         userRepository.saveAndFlush(user3);
 
         // ----- List of Liked Tweets -----
-        user1.setLikes(new HashSet<>(user3Tweets));
+        user1.setLikes(user3Tweets);
         userRepository.saveAndFlush(user1);
 
-        user2.setLikes(new HashSet<>(user1Tweets));
-        user2.setLikes(new HashSet<>(user2Tweets));
+        user2.setLikes(user1Tweets);
+        user2.setLikes(user2Tweets);
         userRepository.saveAndFlush(user2);
 
-        user3.setLikes(new HashSet<>(user2Tweets));
+        user3.setLikes(user2Tweets);
         userRepository.saveAndFlush(user3);
 
-        deletedUser.setLikes(new HashSet<>(user2Tweets));
+        deletedUser.setLikes(user2Tweets);
         userRepository.saveAndFlush(deletedUser);
 
         // ----- List of Following -----
         List<User> followingList = List.of(user2, user3, user4);
-        user1.setFollowing(new HashSet<>(followingList));
+        user1.setFollowing(followingList);
         userRepository.saveAndFlush(user1);
         // ----- List of Followers -----
         List<User> followersList = List.of(user3, user5);
-        user1.setFollowers(new HashSet<>(followersList));
+        user1.setFollowers(followersList);
+
         userRepository.saveAndFlush(user1);
 
         // ----- Tweet Mentions -----
@@ -273,11 +274,11 @@ public class Seeder implements CommandLineRunner {
 
         // Following
         List<User> following_1 = List.of(user2, user3, user4, deletedUser);
-        user1.setFollowing(new HashSet<>(following_1));
+        user1.setFollowing(following_1);
 
         List<User> followers_1 = List.of(user5, deletedUser);
-        user1.setFollowers(new HashSet<>(followers_1));
+        user1.setFollowers(followers_1);
         userRepository.saveAndFlush(user1);
     }
-
 }
+

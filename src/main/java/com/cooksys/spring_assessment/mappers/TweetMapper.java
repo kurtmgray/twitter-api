@@ -9,4 +9,5 @@ import org.mapstruct.Mapper;
 public interface TweetMapper {
 
     Tweet dtoToEntity(TweetRequestDto tweetRequestDto);
+
 }

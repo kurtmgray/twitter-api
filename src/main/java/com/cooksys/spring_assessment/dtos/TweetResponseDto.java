@@ -20,13 +20,10 @@ public class TweetResponseDto {
     @NonNull
     private Timestamp posted;
 
-    @NonNull
     private String content;
 
-    @NonNull
     private Tweet inReplyOf;
 
-    @NonNull
     private Tweet repostOf;
 
 }
