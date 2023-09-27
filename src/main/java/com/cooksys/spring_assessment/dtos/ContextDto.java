@@ -4,12 +4,10 @@ import com.cooksys.spring_assessment.entities.Tweet;
 import com.cooksys.spring_assessment.repositories.TweetRepository;
 import com.cooksys.spring_assessment.exceptions.NotFoundException;
 
-import java.util.Set;
-import java.util.SortedSet;
-import java.util.TreeSet;
-import java.util.Comparator;
+import java.util.*;
 
-import lombok.Getter;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @NoArgsConstructor
 @Data
