@@ -12,23 +12,23 @@ import javax.persistence.Embedded;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
-import org.hibernate.annotations.CreationTimestamp;
 
-import lombok.Data;
-import lombok.RequiredArgsConstructor;
+import lombok.*;
+import org.hibernate.annotations.CreationTimestamp;
 
 @Entity
 @Table(name="User_Account")
-@RequiredArgsConstructor
+@NoArgsConstructor
 @Data
 public class User {
 
   @Id
   @GeneratedValue
   private Long id;
-  
+
+  @Setter(AccessLevel.NONE)
   @CreationTimestamp
-  final private Timestamp joined;
+  private Timestamp joined;
   
   private boolean deleted = false;
   

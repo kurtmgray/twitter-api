@@ -9,10 +9,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class ValidateController {
 
-
-
   //  @GetMapping("/tag/exists/{label}")
-
 
   //  @GetMapping("/username/exists/{username}")
 

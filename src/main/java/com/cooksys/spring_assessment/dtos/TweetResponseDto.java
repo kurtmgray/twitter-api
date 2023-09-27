@@ -13,9 +13,7 @@ import lombok.NonNull;
 @NoArgsConstructor
 @Data
 public class TweetResponseDto {
-    
 
-  
     @NonNull
     private Integer author;
 
@@ -30,6 +28,5 @@ public class TweetResponseDto {
 
     @NonNull
     private Tweet repostOf;
-
 
 }
