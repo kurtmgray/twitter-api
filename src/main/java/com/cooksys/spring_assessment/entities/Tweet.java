@@ -6,6 +6,7 @@ import org.springframework.lang.NonNull;
 
 import javax.persistence.*;
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
@@ -39,16 +40,7 @@ public class Tweet {
     @JoinColumn(name = "repostOf")
     private Tweet repostOf;
 
-    @ManyToMany
-    @JoinTable(
-            name = "user_mentions",
-            joinColumns = {
-                    @JoinColumn(name = "tweet_id"),
-            },
-            inverseJoinColumns =  {
-                    @JoinColumn(name = "user_id"),
-            }
-    )
+    @ManyToMany(mappedBy = "mentions")
     private List<User> mentionedUsers;
 
     @ManyToMany(mappedBy = "likes")
