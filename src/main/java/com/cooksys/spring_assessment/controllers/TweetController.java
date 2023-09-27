@@ -1,5 +1,6 @@
 package com.cooksys.spring_assessment.controllers;
 
+import com.cooksys.spring_assessment.dtos.CredentialsDto;
 import com.cooksys.spring_assessment.dtos.TweetRequestDto;
 import com.cooksys.spring_assessment.dtos.TweetResponseDto;
 import com.cooksys.spring_assessment.services.TweetService;
@@ -28,5 +29,14 @@ public class TweetController {
     return new ResponseEntity<>(tweetService.createSimpleTweet(tweetRequestDto), HttpStatus.CREATED);
   }
 
+  @GetMapping("/{id}")
+  public ResponseEntity<TweetResponseDto> getTweetById(@PathVariable Long id) {
+    return new ResponseEntity<>(tweetService.getTweetById(id), HttpStatus.OK);
+  }
+
+  @DeleteMapping("/{id}")
+  ResponseEntity<TweetResponseDto> deleteTweetById(@PathVariable Long id, @RequestBody CredentialsDto credentialsDto) {
+    return new ResponseEntity<>(tweetService.deleteTweetById(id, credentialsDto), HttpStatus.OK);
+  }
 
 }
