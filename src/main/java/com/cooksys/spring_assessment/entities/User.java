@@ -56,7 +56,7 @@ public class User {
     @OneToMany(mappedBy = "author")
     private List<Tweet> tweets;
 
-    @ManyToMany
+    @ManyToMany(mappedBy = "usersWhoLike")
     @JoinTable(
             name = "user_likes",
             joinColumns = {
@@ -69,7 +69,7 @@ public class User {
     private List<Tweet> likes;
 
 
-    @ManyToMany
+    @ManyToMany(mappedBy = "mentionedUsers")
     @JoinTable(
             name = "user_mentions",
             joinColumns = {
