@@ -1,7 +1,7 @@
 package com.cooksys.spring_assessment.entities;
 
 import java.sql.Timestamp;
-import java.util.Set;
+import java.util.List;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;

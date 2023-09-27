@@ -165,8 +165,8 @@ public class Seeder implements CommandLineRunner {
         tweet1.setAuthor(user1);
         tweet1.setDeleted(false);
         tweet1.setContent("This is some content 1 tweet1 #eldenlord #mario");
-        tweet1.setTweetHashtags(new HashSet<>(Arrays.asList(hashtag1, hashtag2)));
-        tweet1.setMentionedUsers(new HashSet<>(Arrays.asList(user1, user2)));
+        tweet1.setTweetHashtags(Arrays.asList(hashtag1, hashtag2));
+        tweet1.setMentionedUsers(Arrays.asList(user1, user2));
         tweetRepository.saveAndFlush(tweet1);
 
         // --- Start Tweet 2 ---
@@ -174,7 +174,7 @@ public class Seeder implements CommandLineRunner {
         tweet2.setAuthor(user1);
         tweet2.setDeleted(false);
         tweet2.setContent("This is some content 2 tweet2 #eldenlord #mario");
-        tweet2.setTweetHashtags(new HashSet<>(Arrays.asList(hashtag1, hashtag2)));
+        tweet2.setTweetHashtags(Arrays.asList(hashtag1, hashtag2));
         tweet2.setInReplyTo(tweet1);
         tweetRepository.saveAndFlush(tweet2);
 
@@ -184,7 +184,7 @@ public class Seeder implements CommandLineRunner {
         tweet3.setDeleted(false);
         // Set Content @PARAM String
         tweet3.setContent("This is some content 3 tweet3 #luigi #whereiscortana");
-        tweet3.setTweetHashtags(new HashSet<>(Arrays.asList(hashtag3, hashtag4)));
+        tweet3.setTweetHashtags(Arrays.asList(hashtag3, hashtag4));
         tweet3.setInReplyTo(tweet2);
         tweetRepository.saveAndFlush(tweet3);
 
@@ -203,7 +203,7 @@ public class Seeder implements CommandLineRunner {
         tweet5.setDeleted(false);
         // Set Content @PARAM String
         tweet5.setContent("This is some content 5 tweet5");
-        tweet5.setMentionedUsers(new HashSet<>(Arrays.asList(user1, user2)));
+        tweet5.setMentionedUsers(Arrays.asList(user1, user2));
         tweet5.setInReplyTo(tweet4);
         tweetRepository.saveAndFlush(tweet5);
 
@@ -213,7 +213,7 @@ public class Seeder implements CommandLineRunner {
         tweet6.setDeleted(false);
         // Set Content @PARAM String
         tweet6.setRepostOf(tweet5);
-        tweet6.setMentionedUsers(new HashSet<>(Arrays.asList(user1, user2)));
+        tweet6.setMentionedUsers(Arrays.asList(user1, user2));
         tweet6.setInReplyTo(tweet2);
         tweetRepository.saveAndFlush(tweet6);
 
@@ -223,12 +223,11 @@ public class Seeder implements CommandLineRunner {
         deletedTweet.setDeleted(true);
         // Set Content @PARAM String
         deletedTweet.setContent("This is a deleted tweet (User3) tweet7");
-        deletedTweet.setMentionedUsers(new HashSet<>(Arrays.asList(user1, user2)));
+        deletedTweet.setMentionedUsers(Arrays.asList(user1, user2));
         tweetRepository.saveAndFlush(deletedTweet);
 
         // ----- LIST of Tweets + Adding to User# -----
         List<Tweet> user1Tweets = List.of(tweet1, tweet2);
-
         user1.setTweets(user1Tweets);
         userRepository.saveAndFlush(user1);
 

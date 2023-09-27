@@ -15,6 +15,8 @@ import lombok.RequiredArgsConstructor;
 
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 public class TweetServiceImpl implements TweetService {
@@ -23,6 +25,11 @@ public class TweetServiceImpl implements TweetService {
   	private final TweetMapper tweetMapper;
 	private final CredentialsMapper credentialsMapper;
 
+	@Override
+	public List<TweetResponseDto> getAllTweets() {
+		List<Tweet> tweets = tweetRepository.findByDeletedFalse();
+		return tweetMapper.entitiesToDtos(tweets);
+	}
 	@Override
 	public TweetResponseDto createSimpleTweet(TweetRequestDto tweetRequestDto) {
 		if (tweetRequestDto == null || tweetRequestDto.getContent() == null || tweetRequestDto.getCredentials() == null) {
@@ -36,4 +43,6 @@ public class TweetServiceImpl implements TweetService {
 
 		return null;
 	}
+
+
 }
