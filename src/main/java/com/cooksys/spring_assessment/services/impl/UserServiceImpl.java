@@ -21,7 +21,7 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final CredentialsMapper credentialsMapper;
 
-    public User validateUser(CredentialsDto credentialsDto) {
+    public User validateUser(CredentialsDto credentialsDto) throws BadRequestException, NotAuthorizedException {
         if (credentialsDto == null || credentialsDto.getUsername() == null || credentialsDto.getPassword() == null) {
             throw new BadRequestException("Both username and password are required.");
         }
