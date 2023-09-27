@@ -1,8 +1,6 @@
 package com.cooksys.spring_assessment.entities;
 
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.RequiredArgsConstructor;
+import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.springframework.lang.NonNull;
 
@@ -11,7 +9,7 @@ import java.sql.Timestamp;
 import java.util.Set;
 
 @Entity
-@RequiredArgsConstructor
+@NoArgsConstructor
 @Data
 public class Tweet {
 
@@ -24,8 +22,9 @@ public class Tweet {
     @NonNull
     private User author;
 
+    @Setter(AccessLevel.NONE)
     @CreationTimestamp
-    final private Timestamp posted;
+    private Timestamp posted;
 
     private boolean deleted = false;
 
@@ -57,11 +56,11 @@ public class Tweet {
     @ManyToMany(mappedBy = "mentions")
     private Set<User> usersWhoMention;
 
-//    @ManyToMany
-//    @JoinTable(
-//            name = "tweet_hashtag",
-//            joinColumns = @JoinColumn(name = "tweet_id"),
-//            inverseJoinColumns = @JoinColumn(name = "hashtag_id")
-//    )
-//    private Set<Hashtag> tweetHashtags;
+    @ManyToMany
+    @JoinTable(
+            name = "tweet_hashtag",
+            joinColumns = @JoinColumn(name = "tweet_id"),
+            inverseJoinColumns = @JoinColumn(name = "hashtag_id")
+    )
+    private Set<Hashtag> tweetHashtags;
 }
