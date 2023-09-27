@@ -54,9 +54,6 @@ public class Tweet {
     @ManyToMany(mappedBy = "likes")
     private List<User> usersWhoLike;
 
-    @ManyToMany(mappedBy = "mentions")
-    private List<User> usersWhoMention;
-
     @ManyToMany
     @JoinTable(
             name = "tweet_hashtag",
@@ -64,4 +61,10 @@ public class Tweet {
             inverseJoinColumns = @JoinColumn(name = "hashtag_id")
     )
     private List<Hashtag> tweetHashtags;
+
+    @OneToMany(mappedBy = "inReplyTo")
+    private List<Tweet> replies = new ArrayList<>();
+
+    @OneToMany(mappedBy = "repostOf")
+    private List<Tweet> reposts = new ArrayList<>();
 }
