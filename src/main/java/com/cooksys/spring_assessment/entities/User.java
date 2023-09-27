@@ -38,20 +38,20 @@ public class User {
     @Embedded
     private Credentials credentials;
 
-//    @ManyToMany
-//    @JoinTable(
-//            name = "followers_following",
-//            joinColumns = {
-//                    @JoinColumn(name = "follower_id")
-//            },
-//            inverseJoinColumns = {
-//                    @JoinColumn(name = "following_id")
-//            }
-//    )
-//    private List<User> following;
-//
-//    @ManyToMany(mappedBy = "following")
-//    private List<User> followers;
+    @ManyToMany
+    @JoinTable(
+            name = "followers_following",
+            joinColumns = {
+                    @JoinColumn(name = "follower_id")
+            },
+            inverseJoinColumns = {
+                    @JoinColumn(name = "following_id")
+            }
+    )
+    private List<User> following;
+
+    @ManyToMany(mappedBy = "following")
+    private List<User> followers;
 
     @OneToMany(mappedBy = "author")
     private List<Tweet> tweets;

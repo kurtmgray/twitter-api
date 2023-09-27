@@ -6,6 +6,7 @@ import org.springframework.lang.NonNull;
 
 import javax.persistence.*;
 import java.sql.Timestamp;
+import java.util.List;
 import java.util.Set;
 
 @Entity
@@ -48,13 +49,13 @@ public class Tweet {
                     @JoinColumn(name = "user_id"),
             }
     )
-    private Set<User> mentionedUsers;
+    private List<User> mentionedUsers;
 
     @ManyToMany(mappedBy = "likes")
-    private Set<User> usersWhoLike;
+    private List<User> usersWhoLike;
 
     @ManyToMany(mappedBy = "mentions")
-    private Set<User> usersWhoMention;
+    private List<User> usersWhoMention;
 
     @ManyToMany
     @JoinTable(
@@ -62,5 +63,5 @@ public class Tweet {
             joinColumns = @JoinColumn(name = "tweet_id"),
             inverseJoinColumns = @JoinColumn(name = "hashtag_id")
     )
-    private Set<Hashtag> tweetHashtags;
+    private List<Hashtag> tweetHashtags;
 }
