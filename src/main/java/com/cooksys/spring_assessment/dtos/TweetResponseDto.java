@@ -5,6 +5,7 @@ import java.sql.Timestamp;
 
 import com.cooksys.spring_assessment.entities.Tweet;
 
+import com.cooksys.spring_assessment.entities.User;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
@@ -15,15 +16,15 @@ import lombok.NonNull;
 public class TweetResponseDto {
 
     @NonNull
-    private Integer author;
+    private UserResponseDto author;
 
     @NonNull
     private Timestamp posted;
 
     private String content;
 
-    private Tweet inReplyOf;
+    private TweetResponseDto inReplyOf;
 
-    private Tweet repostOf;
+    private TweetResponseDto repostOf;
 
 }

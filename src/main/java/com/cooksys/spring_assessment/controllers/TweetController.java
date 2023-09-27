@@ -6,12 +6,11 @@ import com.cooksys.spring_assessment.services.TweetService;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import lombok.RequiredArgsConstructor;
+
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -20,6 +19,10 @@ public class TweetController {
 
   private final TweetService tweetService;
 
+  @GetMapping
+  public ResponseEntity<List<TweetResponseDto>> getAllTweets() {
+    return new ResponseEntity<>(tweetService.getAllTweets(), HttpStatus.OK);
+  }
   @PostMapping
   public ResponseEntity<TweetResponseDto> createSimpleTweet(@RequestBody TweetRequestDto tweetRequestDto) {
     return new ResponseEntity<>(tweetService.createSimpleTweet(tweetRequestDto), HttpStatus.CREATED);

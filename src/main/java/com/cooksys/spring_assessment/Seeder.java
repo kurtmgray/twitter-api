@@ -228,7 +228,6 @@ public class Seeder implements CommandLineRunner {
 
         // ----- LIST of Tweets + Adding to User# -----
         List<Tweet> user1Tweets = List.of(tweet1, tweet2);
-
         user1.setTweets(user1Tweets);
         userRepository.saveAndFlush(user1);
 
@@ -254,15 +253,15 @@ public class Seeder implements CommandLineRunner {
         deletedUser.setLikes(user2Tweets);
         userRepository.saveAndFlush(deletedUser);
 
-        // ----- List of Following -----
-        List<User> followingList = List.of(user2, user3, user4);
-        user1.setFollowing(followingList);
-        userRepository.saveAndFlush(user1);
-        // ----- List of Followers -----
-        List<User> followersList = List.of(user3, user5);
-        user1.setFollowers(followersList);
+//        // ----- List of Following -----
+//        List<User> followingList = List.of(user2, user3, user4);
+//        user1.setFollowing(followingList);
+//        userRepository.saveAndFlush(user1);
+//        // ----- List of Followers -----
+//        List<User> followersList = List.of(user3, user5);
+//        user1.setFollowers(followersList);
 
-        userRepository.saveAndFlush(user1);
+//        userRepository.saveAndFlush(user1);
 
         // ----- Tweet Mentions -----
         Tweet mention1 = new Tweet();
@@ -272,13 +271,13 @@ public class Seeder implements CommandLineRunner {
         mention1.setContent("This is some content for tweet mention 1");
         tweetRepository.saveAndFlush(mention1);
 
-        // Following
-        List<User> following_1 = List.of(user2, user3, user4, deletedUser);
-        user1.setFollowing(following_1);
-
-        List<User> followers_1 = List.of(user5, deletedUser);
-        user1.setFollowers(followers_1);
-        userRepository.saveAndFlush(user1);
+//        // Following
+//        List<User> following_1 = List.of(user2, user3, user4, deletedUser);
+//        user1.setFollowing(following_1);
+//
+//        List<User> followers_1 = List.of(user5, deletedUser);
+//        user1.setFollowers(followers_1);
+//        userRepository.saveAndFlush(user1);
     }
 }
 
