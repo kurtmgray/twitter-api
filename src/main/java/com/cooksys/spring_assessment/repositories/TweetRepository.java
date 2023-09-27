@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
+import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -14,5 +15,5 @@ public interface TweetRepository extends JpaRepository<Tweet, Long> {
 	
 	Optional<Set<Tweet>> findByInReplyTo(Tweet target);
 
-    List<Tweet> findByDeletedFalse();
+    List<Tweet> findByDeletedFalse(Sort sort);
 }
