@@ -1,6 +1,10 @@
 package com.cooksys.spring_assessment;
 
-import com.cooksys.spring_assessment.entities.*;
+import com.cooksys.spring_assessment.entities.Profile;
+import com.cooksys.spring_assessment.entities.User;
+import com.cooksys.spring_assessment.entities.Credentials;
+import com.cooksys.spring_assessment.entities.Hashtag;
+import com.cooksys.spring_assessment.entities.Tweet;
 import com.cooksys.spring_assessment.repositories.HashtagRepository;
 import com.cooksys.spring_assessment.repositories.TweetRepository;
 import com.cooksys.spring_assessment.repositories.UserRepository;
@@ -224,6 +228,7 @@ public class Seeder implements CommandLineRunner {
 
         // ----- LIST of Tweets + Adding to User# -----
         List<Tweet> user1Tweets = List.of(tweet1, tweet2);
+
         user1.setTweets(user1Tweets);
         userRepository.saveAndFlush(user1);
 
@@ -256,6 +261,7 @@ public class Seeder implements CommandLineRunner {
         // ----- List of Followers -----
         List<User> followersList = List.of(user3, user5);
         user1.setFollowers(followersList);
+
         userRepository.saveAndFlush(user1);
 
         // ----- Tweet Mentions -----
@@ -275,3 +281,4 @@ public class Seeder implements CommandLineRunner {
         userRepository.saveAndFlush(user1);
     }
 }
+

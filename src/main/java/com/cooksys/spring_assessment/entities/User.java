@@ -1,15 +1,23 @@
 package com.cooksys.spring_assessment.entities;
 
+import java.sql.Timestamp;
+import java.util.Set;
+
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.Table;
+import javax.persistence.Embedded;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
+import javax.persistence.OneToMany;
+
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 
-import javax.persistence.*;
-import java.sql.Timestamp;
-import java.util.List;
-import java.util.Set;
-
 @Entity
-@Table(name = "User_Account")
+@Table(name="User_Account")
 @NoArgsConstructor
 @Data
 public class User {
@@ -59,6 +67,7 @@ public class User {
             }
     )
     private List<Tweet> likes;
+
 
     @ManyToMany
     @JoinTable(
