@@ -15,6 +15,8 @@ import lombok.NonNull;
 @Data
 public class TweetResponseDto {
 
+    private Long id;
+
     @NonNull
     private UserResponseDto author;
 
