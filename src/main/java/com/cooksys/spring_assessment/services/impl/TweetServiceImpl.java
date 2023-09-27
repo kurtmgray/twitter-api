@@ -13,6 +13,7 @@ import com.cooksys.spring_assessment.repositories.TweetRepository;
 import com.cooksys.spring_assessment.repositories.UserRepository;
 import com.cooksys.spring_assessment.services.TweetService;
 
+import com.cooksys.spring_assessment.services.UserService;
 import lombok.RequiredArgsConstructor;
 
 import org.springframework.data.domain.Sort;
@@ -31,8 +32,8 @@ public class TweetServiceImpl implements TweetService {
 	private final UserRepository userRepository;
   	private final TweetMapper tweetMapper;
 	private final CredentialsMapper credentialsMapper;
+	private final UserService userService;
 
-	// TODO: map username and email
 	@Override
 	public List<TweetResponseDto> getAllTweets() {
 		List<Tweet> tweets = tweetRepository.findByDeletedFalse(Sort.by(Sort.Order.desc("posted")));
@@ -41,29 +42,11 @@ public class TweetServiceImpl implements TweetService {
 	}
 	@Override
 	public TweetResponseDto createSimpleTweet(TweetRequestDto tweetRequestDto) {
-		// validate dto
 		if (tweetRequestDto == null || tweetRequestDto.getContent() == null || tweetRequestDto.getCredentials() == null) {
 			throw new BadRequestException("Malformed request.");
 		}
-
-		// validate user
-		Credentials credentials = credentialsMapper.dtoToEntity(tweetRequestDto.getCredentials());
-		Optional<User> optionalUser = userRepository.findByCredentialsUsernameAndCredentialsPassword(credentials.getUsername(), credentials.getPassword());
-		if (optionalUser.isEmpty()) {
-			throw new BadRequestException("Invalid credentials.");
-		}
-//		if (optionalUser.isEmpty()) {
-//			throw new BadRequestException("Invalid username.");
-//		}
-//		optionalUser = userRepository.findByCredentialsPassword(credentials.getPassword());
-//		if (optionalUser.isEmpty()) {
-//			throw new BadRequestException("Invalid password.");
-//		}
-
-		User user = optionalUser.get();
-		Tweet tweet = tweetMapper.dtoToEntity(tweetRequestDto);
-		tweet.setAuthor(user);
-
+		User user = userService.validateUser(tweetRequestDto.getCredentials());
+		Tweet tweet = tweetMapper.dtoToEntity(tweetRequestDto, user);
 
 		return tweetMapper.entityToDto(tweet);
 	}
