@@ -5,8 +5,7 @@ import com.cooksys.spring_assessment.entities.User;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
-@Mapper(componentModel = "spring")
-
+@Mapper(componentModel = "spring", uses = { ProfileMapper.class, CredentialsMapper.class })
 public interface UserMapper {
 
     @Mapping(source = "credentials.username", target = "username")
