@@ -134,8 +134,6 @@ public class TweetServiceImpl implements TweetService {
 		return tweetMapper.entityToDto(tweetRepository.saveAndFlush(repost));
 	}
 
-	// TODO: choose an approach between the next 3 methods
-	// this one
 	@Override
 	public List<HashtagDto> getAllTagsFromTweet(Long id) {
 		Tweet tweet = validateTweet(id);
@@ -143,13 +141,13 @@ public class TweetServiceImpl implements TweetService {
 		return hashtagMapper.entitiesToDtos(tweet.getTweetHashtags());
 	}
 
-	// and this one
 	@Override
 	public List<UserResponseDto> getAllUserLikesOfTweet(Long id) {
-		return userMapper.entitiesToDtos(userRepository.findByLikesIdAndDeletedFalse(id));
+		Tweet tweet = validateTweet(id);
+
+		return userMapper.entitiesToDtos(tweet.getUsersWhoLike());
 	}
 
-	// and this one
 	@Override
 	public List<TweetResponseDto> getAllRepostsOfTweet(Long id) {
 		Tweet tweet = validateTweet(id);
@@ -163,9 +161,6 @@ public class TweetServiceImpl implements TweetService {
 
 		return userMapper.entitiesToDtos(tweet.getMentionedUsers());
 	}
-
-
-
 
 	private Tweet validateTweet(Long id) throws NotFoundException {
 		Optional<Tweet> tweet = tweetRepository.findByIdAndDeletedFalse(id);
