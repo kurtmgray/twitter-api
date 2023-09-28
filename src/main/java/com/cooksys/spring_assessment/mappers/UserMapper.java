@@ -5,9 +5,13 @@ import com.cooksys.spring_assessment.entities.User;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
+import java.util.List;
+
 @Mapper(componentModel = "spring", uses = { ProfileMapper.class, CredentialsMapper.class })
 public interface UserMapper {
 
     @Mapping(source = "credentials.username", target = "username")
     UserResponseDto userToUserResponseDto(User user);
+
+    List<UserResponseDto> entitiesToDtos(List<User> usersWhoLike);
 }
