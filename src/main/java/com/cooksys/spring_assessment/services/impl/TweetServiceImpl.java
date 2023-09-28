@@ -23,8 +23,12 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 @Service
 @RequiredArgsConstructor
@@ -37,7 +41,8 @@ public class TweetServiceImpl implements TweetService {
 	private final UserRepository userRepository;
 	private final HashtagRepository hashtagRepository;
 	private final HashtagMapper hashtagMapper;
-
+	
+	Comparator<Tweet> postedDateComparator = (t1, t2) -> t1.getPosted().compareTo(t2.getPosted());
 
 	@Override
 	public List<TweetResponseDto> getAllTweets() {
@@ -54,6 +59,7 @@ public class TweetServiceImpl implements TweetService {
 		User user = userService.validateUser(tweetRequestDto.getCredentials());
 		Tweet tweet = tweetMapper.dtoToEntity(tweetRequestDto, user);
 
+		tweet.setAuthor(user);
 		processMentionsAndHashtags(tweet, user);
 
 		return tweetMapper.entityToDto(tweetRepository.saveAndFlush(tweet));
@@ -115,6 +121,7 @@ public class TweetServiceImpl implements TweetService {
 
 		User user = userService.validateUser(tweetRequestDto.getCredentials());
 		Tweet reply = tweetMapper.dtoToEntity(tweetRequestDto, user);
+		reply.setAuthor(user);
 		reply.setInReplyTo(tweet);
 
 		processMentionsAndHashtags(reply, user);
@@ -184,7 +191,7 @@ public class TweetServiceImpl implements TweetService {
 			if (word.startsWith("@") && word.length() > 1) {
 				mentions.add(word.substring(1));
 			} else if (word.startsWith("#") && word.length() > 1) {
-				hashtags.add(word.substring(1));
+				hashtags.add(word);
 			}
 		}
 
@@ -223,5 +230,61 @@ public class TweetServiceImpl implements TweetService {
 		tweet.setTweetHashtags(hashtagEntities);
 		tweetRepository.saveAndFlush(tweet);
 	}
+	
+	public List<TweetResponseDto> getAllTweetsWithLabel(String label) {
+		Optional<List<Tweet>> getTweets = tweetRepository.findByTweetHashtagsAndDeletedFalse(label);
+		if (!getTweets.isEmpty()) {
+			List<Tweet> labeledTweets = getTweets.get();
+			labeledTweets.sort(postedDateComparator);
+			return tweetMapper.entitiesToDtos(labeledTweets);
+		}
+		return new ArrayList<TweetResponseDto>();
+	}
+	
+	public List<TweetResponseDto> getDirectRepliesToTweet(Long id) {
+		Tweet target = validateTweet(id);
+		Optional<Set<Tweet>> getDirectReplies = tweetRepository.findByInReplyToAndDeletedFalse(target);
+		if (!getDirectReplies.isEmpty()) {
+			List<Tweet> directReplies = new ArrayList<Tweet>(getDirectReplies.get());
+			return tweetMapper.entitiesToDtos(directReplies);
+		}
+		return new ArrayList<TweetResponseDto>();
+	}
+	
+	public ContextDto getContextToTweet(Long id) {
+		Tweet target = validateTweet(id);
+		
+		ContextDto context = new ContextDto();
+		context.setTarget(tweetMapper.entityToDto(target));
+		context.setBefore(tweetMapper.entitiesToDtos(createContextBefore(target)));
+		context.setAfter(tweetMapper.entitiesToDtos(createContextAfter(target, new TreeSet<Tweet>(postedDateComparator))));
+		
+		return context;
+	}
+	
+	 private List<Tweet> createContextBefore(Tweet target) {
+		List<Tweet> beforeTweets = new ArrayList<Tweet>();
+	 	while (target.getInReplyTo() != null) {
+	 		target = target.getInReplyTo();
+	 		beforeTweets.add(target);
+	 	}
+	 	return beforeTweets;
+	 }
+	
+	 private List<Tweet> createContextAfter(Tweet target, SortedSet<Tweet> afterTweets) {
+		if (target == null) return new ArrayList<Tweet>();
+		 
+		Optional<Set<Tweet>> getReplies = tweetRepository.findByInReplyTo(target);
+		
+		if (!getReplies.isEmpty()) {
+			Set<Tweet> replies = getReplies.get();
+			for (Tweet t : replies) {
+				if (!t.getDeleted()) afterTweets.add(t);
+				return createContextAfter(t, afterTweets);
+			}
+		}
+		
+		return createContextAfter(null, null);
+	 }
 
 }

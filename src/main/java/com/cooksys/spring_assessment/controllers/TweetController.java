@@ -77,5 +77,14 @@ public class TweetController {
     return new ResponseEntity<>(tweetService.getAllMentionsInTweet(id), HttpStatus.OK);
   }
 
-
+  @GetMapping("/{id}/replies")
+  public ResponseEntity<List<TweetResponseDto>> getDirectRepliesToTweet(@PathVariable Long id) {
+	  return new ResponseEntity<>(tweetService.getDirectRepliesToTweet(id), HttpStatus.OK);
+  }
+  
+  @GetMapping("/{id}/context")
+  public ResponseEntity<ContextDto> getContextToTweet(@PathVariable Long id) {
+	  return new ResponseEntity<>(tweetService.getContextToTweet(id), HttpStatus.OK);
+  }
+  
 }

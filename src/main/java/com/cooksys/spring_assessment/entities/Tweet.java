@@ -29,6 +29,7 @@ public class Tweet {
     private Timestamp posted;
 
     private boolean deleted = false;
+    public boolean getDeleted() { return deleted; }
 
     private String content;
 

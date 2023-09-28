@@ -25,7 +25,7 @@ public class TweetResponseDto {
 
     private String content;
 
-    private TweetResponseDto inReplyOf;
+    private TweetResponseDto inReplyTo;
 
     private TweetResponseDto repostOf;
 
