@@ -1,10 +1,7 @@
 package com.cooksys.spring_assessment.services.impl;
 
 //import com.cooksys.spring_assessment.mappers.TweetMapper;
-import com.cooksys.spring_assessment.dtos.CredentialsDto;
-import com.cooksys.spring_assessment.dtos.HashtagDto;
-import com.cooksys.spring_assessment.dtos.TweetRequestDto;
-import com.cooksys.spring_assessment.dtos.TweetResponseDto;
+import com.cooksys.spring_assessment.dtos.*;
 import com.cooksys.spring_assessment.entities.Hashtag;
 import com.cooksys.spring_assessment.entities.Tweet;
 import com.cooksys.spring_assessment.entities.User;
@@ -13,6 +10,7 @@ import com.cooksys.spring_assessment.exceptions.NotAuthorizedException;
 import com.cooksys.spring_assessment.exceptions.NotFoundException;
 import com.cooksys.spring_assessment.mappers.HashtagMapper;
 import com.cooksys.spring_assessment.mappers.TweetMapper;
+import com.cooksys.spring_assessment.mappers.UserMapper;
 import com.cooksys.spring_assessment.repositories.HashtagRepository;
 import com.cooksys.spring_assessment.repositories.TweetRepository;
 import com.cooksys.spring_assessment.repositories.UserRepository;
@@ -35,6 +33,7 @@ public class TweetServiceImpl implements TweetService {
 	private final TweetRepository tweetRepository;
   	private final TweetMapper tweetMapper;
 	private final UserService userService;
+	private final UserMapper userMapper;
 	private final UserRepository userRepository;
 	private final HashtagRepository hashtagRepository;
 	private final HashtagMapper hashtagMapper;
@@ -55,7 +54,9 @@ public class TweetServiceImpl implements TweetService {
 		User user = userService.validateUser(tweetRequestDto.getCredentials());
 		Tweet tweet = tweetMapper.dtoToEntity(tweetRequestDto, user);
 
-		return tweetMapper.entityToDto(tweet);
+		processMentionsAndHashtags(tweet, user);
+
+		return tweetMapper.entityToDto(tweetRepository.saveAndFlush(tweet));
 	}
 
 	@Override
@@ -86,25 +87,6 @@ public class TweetServiceImpl implements TweetService {
 	}
 
 	@Override
-	public TweetResponseDto addTweetReply(Long id, TweetRequestDto tweetRequestDto) {
-		if (tweetRequestDto == null || tweetRequestDto.getContent() == null || tweetRequestDto.getCredentials() == null) {
-			throw new BadRequestException("Malformed request.");
-		}
-
-		Tweet tweet = validateTweet(id);
-
-		User user = userService.validateUser(tweetRequestDto.getCredentials());
-		Tweet reply = tweetMapper.dtoToEntity(tweetRequestDto, user);
-		reply.setInReplyTo(tweet);
-		tweetRepository.saveAndFlush(tweet);
-
-		// TODO: finish this
-		processMentionsAndHashtags(reply);
-
-		return tweetMapper.entityToDto(tweetRepository.saveAndFlush(reply));
-	}
-
-	@Override
 	public void addLikeToTweet(Long id, CredentialsDto credentialsDto) {
 		Tweet tweet = validateTweet(id);
 		User user = userService.validateUser(credentialsDto);
@@ -122,12 +104,68 @@ public class TweetServiceImpl implements TweetService {
 		return;
 	}
 
+	// TODO: createReply? add checks for tweet type?
+	@Override
+	public TweetResponseDto addTweetReply(Long id, TweetRequestDto tweetRequestDto) {
+		if (tweetRequestDto == null || tweetRequestDto.getContent() == null || tweetRequestDto.getCredentials() == null) {
+			throw new BadRequestException("Malformed request.");
+		}
+
+		Tweet tweet = validateTweet(id);
+
+		User user = userService.validateUser(tweetRequestDto.getCredentials());
+		Tweet reply = tweetMapper.dtoToEntity(tweetRequestDto, user);
+		reply.setInReplyTo(tweet);
+
+		processMentionsAndHashtags(reply, user);
+
+		return tweetMapper.entityToDto(tweetRepository.saveAndFlush(reply));
+	}
+
+	@Override
+	public TweetResponseDto repostTweet(Long id, CredentialsDto credentialsDto) {
+		User user = userService.validateUser(credentialsDto);
+		Tweet tweet = validateTweet(id);
+
+		Tweet repost = new Tweet();
+		repost.setAuthor(user);
+		repost.setRepostOf(tweet);
+
+		return tweetMapper.entityToDto(tweetRepository.saveAndFlush(repost));
+	}
+
+	// TODO: choose an approach between the next 3 methods
+	// this one
 	@Override
 	public List<HashtagDto> getAllTagsFromTweet(Long id) {
 		Tweet tweet = validateTweet(id);
 
 		return hashtagMapper.entitiesToDtos(tweet.getTweetHashtags());
 	}
+
+	// and this one
+	@Override
+	public List<UserResponseDto> getAllUserLikesOfTweet(Long id) {
+		return userMapper.entitiesToDtos(userRepository.findByLikesIdAndDeletedFalse(id));
+	}
+
+	// and this one
+	@Override
+	public List<TweetResponseDto> getAllRepostsOfTweet(Long id) {
+		Tweet tweet = validateTweet(id);
+
+		return tweetMapper.entitiesToDtos(tweet.getReposts());
+	}
+
+	@Override
+	public List<UserResponseDto> getAllMentionsInTweet(Long id) {
+		Tweet tweet = validateTweet(id);
+
+		return userMapper.entitiesToDtos(tweet.getMentionedUsers());
+	}
+
+
+
 
 	private Tweet validateTweet(Long id) throws NotFoundException {
 		Optional<Tweet> tweet = tweetRepository.findByIdAndDeletedFalse(id);
@@ -137,8 +175,9 @@ public class TweetServiceImpl implements TweetService {
 		return tweet.get();
 	}
 
-	// TODO: Break into smaller methods
-	private void processMentionsAndHashtags(Tweet tweet) {
+
+	// TODO: Break into smaller methods, work on saving too often
+	private void processMentionsAndHashtags(Tweet tweet, User user) {
 		List<String> mentions = new ArrayList<>();
 		List<String> hashtags = new ArrayList<>();
 
@@ -155,29 +194,39 @@ public class TweetServiceImpl implements TweetService {
 		}
 
 		for (String username : mentions) {
-			// handle
+			Optional<User> optionalUser = userRepository.findByCredentialsUsername(username);
+
+			if (optionalUser.isPresent()) {
+				User mentionedUser = optionalUser.get();
+				mentionedUser.getMentions().add(tweet);
+
+				userRepository.saveAndFlush(mentionedUser);
+			} else {
+				// handle where mention isn't a valid username
+			}
 		}
 
-		for (String hashtag : hashtags) {
-			Optional<Hashtag> optionalHashtag = hashtagRepository.findByLabel(hashtag);
+		List<Hashtag> hashtagEntities = new ArrayList<>();
+		for (String label : hashtags) {
+			Optional<Hashtag> optionalHashtag = hashtagRepository.findByLabel(label);
+
 			if (optionalHashtag.isPresent()) {
 				Hashtag updatedHashtag = optionalHashtag.get();
 				List<Tweet> hashtagTweets = updatedHashtag.getTweets();
 				hashtagTweets.add(tweet);
 				updatedHashtag.setTweets(hashtagTweets);
-//				updatedHashtag.setLastUsed(new Timestamp(now));
 				hashtagRepository.saveAndFlush(updatedHashtag);
 			} else {
 				Hashtag newHashtag = new Hashtag();
+				newHashtag.setLabel(label);
 				newHashtag.setTweets(new ArrayList<>(List.of(tweet)));
-//				newHashtag.setLastUsed(new Timestamp(now));
+				hashtagEntities.add(newHashtag);
 				hashtagRepository.saveAndFlush(newHashtag);
 			}
 
 		}
-//		tweet.setTweetHashtags(hashtags);
-
+		tweet.setTweetHashtags(hashtagEntities);
+		tweetRepository.saveAndFlush(tweet);
 	}
-
 
 }
