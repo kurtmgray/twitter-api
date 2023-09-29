@@ -21,13 +21,13 @@ public class ValidateServiceImpl implements ValidateService {
 	  // checks whether hashtag exists
 	  @Override
 	  public boolean validateHashtag(String label) {
-		  return !hashtagRepository.findByLabel(label).isEmpty();
+		  return hashtagRepository.findByLabel(label).isPresent();
 	  }
 		
 	  // checks whether username exists (and is not deleted(?))
 	  @Override
 	  public boolean validateUsername(String username) {
 		  Optional<User> user = userRepository.findByCredentialsUsername(username);
-		  return user.isEmpty() ? false : true;
+		  return user.isPresent();
 	  }
 }

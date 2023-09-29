@@ -60,8 +60,9 @@ public class TweetServiceImpl implements TweetService {
 		User user = userService.validateUser(tweetRequestDto.getCredentials());
 		Tweet tweet = tweetMapper.dtoToEntity(tweetRequestDto);
 		tweet.setAuthor(user);
-    
-		processMentionsAndHashtags(tweet);
+
+		processMentions(tweet);
+		processHashtags(tweet);
 
 		return tweetMapper.entityToDto(tweetRepository.saveAndFlush(tweet));
 	}
@@ -108,10 +109,8 @@ public class TweetServiceImpl implements TweetService {
 
 		tweetRepository.saveAndFlush(tweet);
 		userRepository.saveAndFlush(user);
-		return;
-	}
+    }
 
-	// TODO: createReply? add checks for tweet type?
 	@Override
 	public TweetResponseDto addTweetReply(Long id, TweetRequestDto tweetRequestDto) {
 		if (tweetRequestDto == null || tweetRequestDto.getContent() == null || tweetRequestDto.getCredentials() == null) {
@@ -119,13 +118,14 @@ public class TweetServiceImpl implements TweetService {
 		}
 
 		Tweet tweet = validateTweet(id);
-
 		User user = userService.validateUser(tweetRequestDto.getCredentials());
 		Tweet reply = tweetMapper.dtoToEntity(tweetRequestDto);
+
 		reply.setAuthor(user);
 		reply.setInReplyTo(tweet);
 
-		processMentionsAndHashtags(reply);
+		processMentions(reply);
+		processHashtags(reply);
 
 		return tweetMapper.entityToDto(tweetRepository.saveAndFlush(reply));
 	}
@@ -170,74 +170,6 @@ public class TweetServiceImpl implements TweetService {
 		return userMapper.entitiesToDtos(tweet.getMentionedUsers());
 	}
 
-	private Tweet validateTweet(Long id) throws NotFoundException {
-		Optional<Tweet> tweet = tweetRepository.findByIdAndDeletedFalse(id);
-		if (tweet.isEmpty()) {
-			throw new NotFoundException("Tweet with id " + id + " does not exist or is deleted.");
-		}
-		return tweet.get();
-	}
-
-
-	// TODO: Break into smaller methods
-	private void processMentionsAndHashtags(Tweet tweet) {
-		List<String> mentions = new ArrayList<>();
-		List<String> hashtags = new ArrayList<>();
-
-		String[] words = tweet.getContent().split(" ");
-
-		for (String word : words) {
-			// remove punctuation at beg. and end of word
-			word = word.replaceAll("^[^a-zA-Z0-9@#]+|[^a-zA-Z0-9@#]+$", "");
-			if (word.startsWith("@") && word.length() > 1) {
-				mentions.add(word.substring(1));
-			} else if (word.startsWith("#") && word.length() > 1) {
-				hashtags.add(word.substring(1));
-			}
-		}
-
-		List<User> mentionedUsers = new ArrayList<>();
-		for (String username : mentions) {
-			Optional<User> optionalUser = userRepository.findByCredentialsUsername(username);
-
-			if (optionalUser.isPresent()) {
-				User mentionedUser = optionalUser.get();
-				mentionedUser.getMentions().add(tweetRepository.saveAndFlush(tweet));
-
-				mentionedUsers.add(mentionedUser);
-				} else {
-				// handle where mention isn't a valid username
-			}
-		}
-		userRepository.saveAllAndFlush(mentionedUsers);
-
-
-		List<Hashtag> hashtagEntities = new ArrayList<>();
-		for (String label : hashtags) {
-			Optional<Hashtag> optionalHashtag = hashtagRepository.findByLabel(label);
-
-			if (optionalHashtag.isPresent()) {
-				Hashtag updatedHashtag = optionalHashtag.get();
-				List<Tweet> hashtagTweets = updatedHashtag.getTweets();
-				hashtagTweets.add(tweet);
-				updatedHashtag.setTweets(hashtagTweets);
-				updatedHashtag.setLastUsed(new Timestamp(System.currentTimeMillis()));
-
-				hashtagRepository.saveAndFlush(updatedHashtag);
-				hashtagEntities.add(updatedHashtag);
-			} else {
-				Hashtag newHashtag = new Hashtag();
-				newHashtag.setLabel(label);
-				newHashtag.setTweets(new ArrayList<>(List.of(tweet)));
-				hashtagEntities.add(newHashtag);
-				hashtagRepository.saveAndFlush(newHashtag);
-			}
-
-		}
-		tweet.setTweetHashtags(hashtagEntities);
-		tweetRepository.saveAndFlush(tweet);
-	}
-	
 	@Override
 	public List<TweetResponseDto> getDirectRepliesToTweet(Long id) {
 		Tweet target = validateTweet(id);
@@ -283,4 +215,74 @@ public class TweetServiceImpl implements TweetService {
 		}
 		 return afterTweets;
 	}
+
+	private Tweet validateTweet(Long id) throws NotFoundException {
+		Optional<Tweet> tweet = tweetRepository.findByIdAndDeletedFalse(id);
+		if (tweet.isEmpty()) {
+			throw new NotFoundException("Tweet with id " + id + " does not exist or is deleted.");
+		}
+		return tweet.get();
+	}
+
+	private List<String> extractMetadataFromContent(String symbol, String content) {
+		List<String> metadata = new ArrayList<>();
+		String[] words = content.split(" ");
+
+		for (String word : words) {
+			// remove punctuation at beg. and end of word
+			word = word.replaceAll("^[^a-zA-Z0-9@#]+|[^a-zA-Z0-9@#]+$", "");
+			if (word.startsWith(symbol) && word.length() > 1) {
+				metadata.add(word.substring(1));
+			}
+		}
+		return metadata;
+	}
+
+	private void processMentions(Tweet tweet) {
+		List<String> mentions = extractMetadataFromContent("@", tweet.getContent());
+		List<User> mentionedUsers = new ArrayList<>();
+		for (String username : mentions) {
+			Optional<User> optionalUser = userRepository.findByCredentialsUsername(username);
+
+			if (optionalUser.isPresent()) {
+				User mentionedUser = optionalUser.get();
+				mentionedUser.getMentions().add(tweetRepository.saveAndFlush(tweet));
+
+				mentionedUsers.add(mentionedUser);
+			} else {
+				// handle where mention isn't a valid username
+				System.out.println("Mention is not a valid username.");
+			}
+		}
+		userRepository.saveAllAndFlush(mentionedUsers);
+	}
+
+	private void processHashtags(Tweet tweet) {
+		List<String> hashtags = extractMetadataFromContent("#", tweet.getContent());
+		List<Hashtag> hashtagEntities = new ArrayList<>();
+		for (String label : hashtags) {
+			Optional<Hashtag> optionalHashtag = hashtagRepository.findByLabel(label);
+
+			if (optionalHashtag.isPresent()) {
+				Hashtag updatedHashtag = optionalHashtag.get();
+				List<Tweet> hashtagTweets = updatedHashtag.getTweets();
+				hashtagTweets.add(tweet);
+				updatedHashtag.setTweets(hashtagTweets);
+				updatedHashtag.setLastUsed(new Timestamp(System.currentTimeMillis()));
+
+				hashtagRepository.saveAndFlush(updatedHashtag);
+				hashtagEntities.add(updatedHashtag);
+			} else {
+				Hashtag newHashtag = new Hashtag();
+				newHashtag.setLabel(label);
+				newHashtag.setTweets(new ArrayList<>(List.of(tweet)));
+				hashtagEntities.add(newHashtag);
+				hashtagRepository.saveAndFlush(newHashtag);
+			}
+
+		}
+		tweet.setTweetHashtags(hashtagEntities);
+		tweetRepository.saveAndFlush(tweet);
+	}
+
 }
