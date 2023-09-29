@@ -9,5 +9,5 @@ import java.util.List;
 @Mapper(componentModel = "spring")
 
 public interface HashtagMapper {
-    List<HashtagDto> entitiesToDtos(List<Hashtag> tweetHashtags);
+    List<HashtagDto> hentitiesToDtos(List<Hashtag> tweetHashtags);
 }
