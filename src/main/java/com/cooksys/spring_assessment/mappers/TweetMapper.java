@@ -13,7 +13,7 @@ import org.mapstruct.Mapper;
 @Mapper(componentModel = "spring", uses = { UserMapper.class })
 public interface TweetMapper {
 
-    Tweet dtoToEntity(TweetRequestDto tweetRequestDto, User user);
+    Tweet dtoToEntity(TweetRequestDto tweetRequestDto);
 
     List<TweetResponseDto> entitiesToDtos(List<Tweet> tweets);
 

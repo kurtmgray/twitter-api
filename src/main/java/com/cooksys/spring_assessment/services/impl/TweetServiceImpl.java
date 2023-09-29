@@ -35,14 +35,14 @@ import java.util.TreeSet;
 public class TweetServiceImpl implements TweetService {
 
 	private final TweetRepository tweetRepository;
-  	private final TweetMapper tweetMapper;
+  private final TweetMapper tweetMapper;
 	private final UserService userService;
 	private final UserMapper userMapper;
 	private final UserRepository userRepository;
 	private final HashtagRepository hashtagRepository;
 	private final HashtagMapper hashtagMapper;
 	
-	Comparator<Tweet> postedDateComparator = (t1, t2) -> t1.getPosted().compareTo(t2.getPosted());
+	private final Comparator<Tweet> postedDateComparator = (t1, t2) -> t1.getPosted().compareTo(t2.getPosted());
 
 	@Override
 	public List<TweetResponseDto> getAllTweets() {
@@ -57,9 +57,9 @@ public class TweetServiceImpl implements TweetService {
 			throw new BadRequestException("Malformed request.");
 		}
 		User user = userService.validateUser(tweetRequestDto.getCredentials());
-		Tweet tweet = tweetMapper.dtoToEntity(tweetRequestDto, user);
-
+		Tweet tweet = tweetMapper.dtoToEntity(tweetRequestDto);
 		tweet.setAuthor(user);
+    
 		processMentionsAndHashtags(tweet, user);
 
 		return tweetMapper.entityToDto(tweetRepository.saveAndFlush(tweet));
@@ -120,7 +120,7 @@ public class TweetServiceImpl implements TweetService {
 		Tweet tweet = validateTweet(id);
 
 		User user = userService.validateUser(tweetRequestDto.getCredentials());
-		Tweet reply = tweetMapper.dtoToEntity(tweetRequestDto, user);
+		Tweet reply = tweetMapper.dtoToEntity(tweetRequestDto);
 		reply.setAuthor(user);
 		reply.setInReplyTo(tweet);
 
@@ -200,10 +200,10 @@ public class TweetServiceImpl implements TweetService {
 
 			if (optionalUser.isPresent()) {
 				User mentionedUser = optionalUser.get();
-				mentionedUser.getMentions().add(tweet);
+				mentionedUser.getMentions().add(tweetRepository.saveAndFlush(tweet));
 
 				userRepository.saveAndFlush(mentionedUser);
-			} else {
+				} else {
 				// handle where mention isn't a valid username
 			}
 		}
