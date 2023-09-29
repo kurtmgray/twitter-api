@@ -3,7 +3,6 @@ package com.cooksys.spring_assessment.controllers;
 import com.cooksys.spring_assessment.dtos.TweetResponseDto;
 import com.cooksys.spring_assessment.dtos.HashtagDto;
 import com.cooksys.spring_assessment.services.HashtagService;
-import com.cooksys.spring_assessment.services.TweetService;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

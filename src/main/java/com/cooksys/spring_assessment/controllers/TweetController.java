@@ -1,8 +1,6 @@
 package com.cooksys.spring_assessment.controllers;
 
 import com.cooksys.spring_assessment.dtos.*;
-import com.cooksys.spring_assessment.entities.Hashtag;
-import com.cooksys.spring_assessment.entities.User;
 import com.cooksys.spring_assessment.services.TweetService;
 
 import org.springframework.http.HttpStatus;

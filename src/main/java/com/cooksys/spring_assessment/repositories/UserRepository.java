@@ -15,4 +15,8 @@ public interface UserRepository extends JpaRepository<User, Long> {
     List<User> findByLikesIdAndDeletedFalse(Long tweetId);
 
     Optional<User> findByCredentialsUsername(String username);
+
+    List<User> findByFollowersAndDeletedFalse(User user);
+
+    List<User> findByFollowingAndDeletedFalse(User user);
 }

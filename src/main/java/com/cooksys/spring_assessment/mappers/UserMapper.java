@@ -1,6 +1,7 @@
 package com.cooksys.spring_assessment.mappers;
 
 import com.cooksys.spring_assessment.dtos.UserResponseDto;
+import com.cooksys.spring_assessment.dtos.UserRequestDto;
 import com.cooksys.spring_assessment.entities.User;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -14,4 +15,11 @@ public interface UserMapper {
     UserResponseDto userToUserResponseDto(User user);
 
     List<UserResponseDto> entitiesToDtos(List<User> usersWhoLike);
+
+    UserResponseDto[] uentitiesToDtos(User[] s);
+
+    User urequestToEntity(UserRequestDto userRequestDto);
+    
+    List<UserResponseDto> uLEntitiesToDtos(List<User> s);
 }
+
