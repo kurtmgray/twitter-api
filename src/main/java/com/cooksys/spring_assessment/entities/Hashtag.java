@@ -3,7 +3,6 @@ package com.cooksys.spring_assessment.entities;
 import java.sql.Timestamp;
 
 import java.util.List;
-import java.util.Set;
 
 import javax.persistence.*;
 

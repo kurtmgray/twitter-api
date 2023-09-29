@@ -16,7 +16,7 @@ public class AnnotatedControllerAdvice {
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(BadRequestException.class)
-    public ErrorDto handlBadRequestException(HttpServletRequest request, BadRequestException badRequestException) {
+    public ErrorDto handleBadRequestException(HttpServletRequest request, BadRequestException badRequestException) {
         return new ErrorDto(badRequestException.getMessage());
     }
 

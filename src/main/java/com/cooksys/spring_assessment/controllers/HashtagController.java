@@ -31,4 +31,5 @@ public class HashtagController {
     public ResponseEntity<List<TweetResponseDto>> getAllTweetsWithLabel(@PathVariable String label) {
     	return new ResponseEntity<>(hashtagService.getAllTweetsWithLabel(label), HttpStatus.OK);
     }
+
 }

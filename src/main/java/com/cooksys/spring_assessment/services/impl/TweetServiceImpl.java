@@ -61,7 +61,7 @@ public class TweetServiceImpl implements TweetService {
 		Tweet tweet = tweetMapper.dtoToEntity(tweetRequestDto);
 		tweet.setAuthor(user);
     
-		processMentionsAndHashtags(tweet, user);
+		processMentionsAndHashtags(tweet);
 
 		return tweetMapper.entityToDto(tweetRepository.saveAndFlush(tweet));
 	}
@@ -125,7 +125,7 @@ public class TweetServiceImpl implements TweetService {
 		reply.setAuthor(user);
 		reply.setInReplyTo(tweet);
 
-		processMentionsAndHashtags(reply, user);
+		processMentionsAndHashtags(reply);
 
 		return tweetMapper.entityToDto(tweetRepository.saveAndFlush(reply));
 	}
@@ -179,8 +179,8 @@ public class TweetServiceImpl implements TweetService {
 	}
 
 
-	// TODO: Break into smaller methods, work on saving too often
-	private void processMentionsAndHashtags(Tweet tweet, User user) {
+	// TODO: Break into smaller methods
+	private void processMentionsAndHashtags(Tweet tweet) {
 		List<String> mentions = new ArrayList<>();
 		List<String> hashtags = new ArrayList<>();
 
@@ -196,6 +196,7 @@ public class TweetServiceImpl implements TweetService {
 			}
 		}
 
+		List<User> mentionedUsers = new ArrayList<>();
 		for (String username : mentions) {
 			Optional<User> optionalUser = userRepository.findByCredentialsUsername(username);
 
@@ -203,11 +204,13 @@ public class TweetServiceImpl implements TweetService {
 				User mentionedUser = optionalUser.get();
 				mentionedUser.getMentions().add(tweetRepository.saveAndFlush(tweet));
 
-				userRepository.saveAndFlush(mentionedUser);
+				mentionedUsers.add(mentionedUser);
 				} else {
 				// handle where mention isn't a valid username
 			}
 		}
+		userRepository.saveAllAndFlush(mentionedUsers);
+
 
 		List<Hashtag> hashtagEntities = new ArrayList<>();
 		for (String label : hashtags) {
