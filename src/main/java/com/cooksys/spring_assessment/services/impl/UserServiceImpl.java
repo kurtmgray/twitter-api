@@ -126,15 +126,17 @@ public class UserServiceImpl implements UserService {
         user1.getCredentials().getUsername().equals(user2.getCredentials().getUsername())) {
             throw new BadRequestException("credentials dont match");
         }
-
         if (userRequestDto.getProfile() == null) {
-            throw new BadRequestException("given profile is null");
+            throw new BadRequestException("credentials dont match");
+        }
+
+        if (userRequestDto.getProfile().getEmail() == null) {
+            return userMapper.userToUserResponseDto(user2);
         }
         
-
-//        if (userRequestDto.getProfile().getEmail() != null) {
-//            user2.getProfile().setEmail(userRequestDto.getProfile().getEmail());
-//        }
+        if (userRequestDto.getProfile().getEmail() != null) {
+           user2.getProfile().setEmail(userRequestDto.getProfile().getEmail());
+       }
 //        if (userRequestDto.getProfile().getFirstName() != null) {
 //            user2.getProfile().setFirstName(userRequestDto.getProfile().getFirstName());
 //        }
