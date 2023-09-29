@@ -38,19 +38,16 @@ public class UserServiceImpl implements UserService {
     private final ProfileMapper profileMapper;
 
 	private final Comparator<Tweet> postedDateComparator = (t1, t2) -> t2.getPosted().compareTo(t1.getPosted());
+    
 
     @Override
     public UserResponseDto[] getAllUsers() {
-
         List<User> l = userRepository.findAll();
-        
         l.removeIf(n -> (n.isDeleted()));
-
         User[] ret = new User[l.size()];
         for (int i = 0; i < ret.length; i++) {
             ret[i] = l.get(i);
         }
-        
         return (userMapper.entitiesToDtosA(ret));
     }
 
@@ -72,9 +69,9 @@ public class UserServiceImpl implements UserService {
             throw new BadRequestException("User already exists.");
         }
         userRepository.saveAndFlush(user);
-
         return userMapper.userToUserResponseDto(user);
     }
+
 
     @Override
     public UserResponseDto getSpecificUser(String username) {
@@ -82,11 +79,9 @@ public class UserServiceImpl implements UserService {
             throw new BadRequestException("Malformed request.");
         }
         Optional<User> u = userRepository.findByCredentialsUsername(username);
-
         if (!u.isPresent()) {
             throw new NotFoundException("User not found.");
         }
-
         return userMapper.userToUserResponseDto(u.get());
     }
 
@@ -100,14 +95,11 @@ public class UserServiceImpl implements UserService {
                 userRequestDto.getCredentials().getUsername(), userRequestDto.getCredentials().getPassword());
 
         Optional<User> u2 = userRepository.findByCredentialsUsername(username);
-
         if (u1.isEmpty() || u2.isEmpty()) {
             throw new BadRequestException("Username and credentials don't match.");
         }
-
         User user1 = u1.get();
         User user2 = u2.get();
-
         if (!user1.getCredentials().getPassword().equals(user2.getCredentials().getPassword()) && 
         user1.getCredentials().getUsername().equals(user2.getCredentials().getUsername())) {
             throw new BadRequestException("Credentials don't match.");
@@ -115,28 +107,14 @@ public class UserServiceImpl implements UserService {
         if (userRequestDto.getProfile() == null) {
             throw new BadRequestException("Credentials don't match.");
         }
-
         if (userRequestDto.getProfile().getEmail() == null) {
             return userMapper.userToUserResponseDto(user2);
         }
-        
         if (userRequestDto.getProfile().getEmail() != null) {
            user2.getProfile().setEmail(userRequestDto.getProfile().getEmail());
        }
-//        if (userRequestDto.getProfile().getFirstName() != null) {
-//            user2.getProfile().setFirstName(userRequestDto.getProfile().getFirstName());
-//        }
-//        if (userRequestDto.getProfile().getLastName() != null) {
-//            user2.getProfile().setLastName(userRequestDto.getProfile().getLastName());
-//        }
-//        if (userRequestDto.getProfile().getPhone() != null) {
-//            user2.getProfile().setPhone(userRequestDto.getProfile().getPhone());
-//        }
-
         user2.setProfile(profileMapper.dtoToEntity(userRequestDto.getProfile()));
-        
         userRepository.saveAndFlush(user2);
-
         return userMapper.userToUserResponseDto(user2);
     }
 
@@ -151,13 +129,11 @@ public class UserServiceImpl implements UserService {
             throw new NotFoundException("User not found.");
         }
         User user = u.get();
-
         if (user.isDeleted()) {
             throw new BadRequestException("User already deleted.");
         }
         user.setDeleted(true);
         userRepository.saveAndFlush(user);
-
         return userMapper.userToUserResponseDto(user);
     }
 
@@ -167,29 +143,21 @@ public class UserServiceImpl implements UserService {
         if (credentialsDto == null || credentialsDto.getPassword() == null || credentialsDto.getUsername() == null || username == null) {
             throw new BadRequestException("Malformed request.");
         }
-
-
         Optional<User> u = userRepository.findByCredentialsUsernameAndCredentialsPassword(credentialsDto.getUsername(), credentialsDto.getPassword());
-
         if (!u.isPresent()) {
             throw new BadRequestException("Not there follower.");
         }
-
         User user1 = u.get();
         Optional<User> uFollow = userRepository.findByCredentialsUsername(username);
-
         if (!uFollow.isPresent() || uFollow.get().isDeleted()) {
             throw new BadRequestException("Not there following.");
         }
-
         User user2 = uFollow.get();
-
         if (user1.getFollowing().contains(user2)) {
             throw new BadRequestException("User already following.");
         }
         user1.getFollowing().add(user2);
         user2.getFollowers().add(user1);
-
         userRepository.saveAndFlush(user1);
         userRepository.saveAndFlush(user2);
     }
@@ -200,25 +168,19 @@ public class UserServiceImpl implements UserService {
         if (credentialsDto == null || credentialsDto.getPassword() == null || credentialsDto.getUsername() == null || username == null) {
             throw new BadRequestException("Malformed request.");
         }
-         Optional<User> u = userRepository.findByCredentialsUsernameAndCredentialsPassword(credentialsDto.getUsername(), credentialsDto.getPassword());
-
+        Optional<User> u = userRepository.findByCredentialsUsernameAndCredentialsPassword(credentialsDto.getUsername(), credentialsDto.getPassword());
         if (!u.isPresent()) {
             throw new BadRequestException("Not there.");
         }
-
         User user1 = u.get();
         Optional<User> uFollow = userRepository.findByCredentialsUsername(username);
 
         if (!uFollow.isPresent() || uFollow.get().isDeleted() || !uFollow.get().getFollowers().contains(user1)) {
             throw new NotFoundException("User you are attempting to unfollow does not exist, has been deleted, or is not currently being followed by you.");
         }
-
         User user2 = uFollow.get();
-
-
         user1.getFollowing().remove(user2);
         user2.getFollowers().remove(user1);
-
         userRepository.saveAndFlush(user1);
         userRepository.saveAndFlush(user2);
     }
@@ -230,7 +192,6 @@ public class UserServiceImpl implements UserService {
         if (!u.isPresent()) {
             throw new BadRequestException("Not there.");
         }
-
         User user = u.get();
         List<Tweet> tweets = user.getTweets();
         for (User uf : user.getFollowers()) {
@@ -238,7 +199,6 @@ public class UserServiceImpl implements UserService {
         }
         tweets.removeIf(n -> (n.getDeleted()));
         tweets.sort(postedDateComparator);
-
         return tweetMapper.entitiesToDtos(tweets);
     }
 
@@ -251,7 +211,6 @@ public class UserServiceImpl implements UserService {
         }
         User user = u.get();
         List<Tweet> tweets = tweetRepository.findByAuthorAndDeletedFalse(user).get();
-        //tweets.removeIf(n -> (n.getDeleted()));
         tweets.sort(postedDateComparator); 
         return tweetMapper.entitiesToDtos(tweets);
     }
@@ -265,13 +224,7 @@ public class UserServiceImpl implements UserService {
         }
         User user = u.get();
         List<Tweet> l = tweetRepository.findByMentionedUsersAndDeletedFalse(user);
-//        for (Tweet t: l) {
-//            if (!t.getMentionedUsers().contains(user)) {
-//                l.remove(t);
-//            }
-//        }
         l.sort(postedDateComparator);
-
         return tweetMapper.entitiesToDtos(l);
     }
 
@@ -282,7 +235,6 @@ public class UserServiceImpl implements UserService {
             throw new BadRequestException("Not there.");
         }
         User user = u.get();
-
         return userMapper.entitiesToDtos(userRepository.findByFollowingAndDeletedFalse(user));
     }
 
@@ -294,7 +246,6 @@ public class UserServiceImpl implements UserService {
             throw new BadRequestException("not there");
         }
         User user = u.get();
-
         return userMapper.entitiesToDtos(userRepository.findByFollowersAndDeletedFalse(user));
     }
 
@@ -306,11 +257,9 @@ public class UserServiceImpl implements UserService {
         }
         Credentials credentials = credentialsMapper.dtoToEntity(credentialsDto);
         Optional<User> optionalUser = userRepository.findByCredentialsUsernameAndCredentialsPassword(credentials.getUsername(), credentials.getPassword());
-
         if (optionalUser.isEmpty()) {
             throw new NotAuthorizedException("Invalid credentials.");
         }
-
         return optionalUser.get();
     }
 }
