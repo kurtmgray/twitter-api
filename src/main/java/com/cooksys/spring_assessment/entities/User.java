@@ -1,6 +1,7 @@
 package com.cooksys.spring_assessment.entities;
 
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.persistence.Entity;
@@ -48,13 +49,13 @@ public class User {
                     @JoinColumn(name = "following_id")
             }
     )
-    private List<User> following;
+    private List<User> following = new ArrayList<>();
 
     @ManyToMany(mappedBy = "following")
-    private List<User> followers;
+    private List<User> followers = new ArrayList<>();
 
     @OneToMany(mappedBy = "author")
-    private List<Tweet> tweets;
+    private List<Tweet> tweets = new ArrayList<>();
 
     @ManyToMany
     @JoinTable(
@@ -66,7 +67,7 @@ public class User {
                     @JoinColumn(name = "tweet_id")
             }
     )
-    private List<Tweet> likes;
+    private List<Tweet> likes = new ArrayList<>();
 
 
     @ManyToMany
@@ -79,6 +80,6 @@ public class User {
                     @JoinColumn(name = "tweet_id")
             }
     )
-    private List<Tweet> mentions;
+    private List<Tweet> mentions = new ArrayList<>();
 
 }
