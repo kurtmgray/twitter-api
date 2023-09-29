@@ -20,7 +20,7 @@ public class ValidateController {
 	
     @GetMapping("/tag/exists/{label}")
 	public ResponseEntity<Boolean> validateHashtag(@PathVariable String label) {
-		return new ResponseEntity<>(validateService.validateHashtag("#" + label), HttpStatus.OK);
+		return new ResponseEntity<>(validateService.validateHashtag(label), HttpStatus.OK);
 	}
 
     @GetMapping("/username/exists/@{username}")

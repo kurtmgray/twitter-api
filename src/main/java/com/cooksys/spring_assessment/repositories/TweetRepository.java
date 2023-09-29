@@ -20,7 +20,7 @@ public interface TweetRepository extends JpaRepository<Tweet, Long> {
 
     Optional<Tweet> findByIdAndDeletedFalse(Long id);
     
-    Optional<List<Tweet>> findByTweetHashtagsAndDeletedFalse(String label);
+    Optional<List<Tweet>> findByTweetHashtagsLabelAndDeletedFalse(String label);
     
     Optional<Set<Tweet>> findByInReplyToAndDeletedFalse(Tweet target);
     

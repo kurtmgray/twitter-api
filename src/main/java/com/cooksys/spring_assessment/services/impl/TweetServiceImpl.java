@@ -192,7 +192,7 @@ public class TweetServiceImpl implements TweetService {
 			if (word.startsWith("@") && word.length() > 1) {
 				mentions.add(word.substring(1));
 			} else if (word.startsWith("#") && word.length() > 1) {
-				hashtags.add(word);
+				hashtags.add(word.substring(1));
 			}
 		}
 

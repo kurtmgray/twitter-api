@@ -147,7 +147,7 @@ public class UserServiceImpl implements UserService {
 //        if (userRequestDto.getProfile().getPhone() != null) {
 //            user2.getProfile().setPhone(userRequestDto.getProfile().getPhone());
 //        }
-        user2.setProfile(profileMapper.dtoToEntiy(userRequestDto.getProfile()));
+        user2.setProfile(profileMapper.dtoToEntity(userRequestDto.getProfile()));
         
         userRepository.saveAndFlush(user2);
         return userMapper.userToUserResponseDto(user2);

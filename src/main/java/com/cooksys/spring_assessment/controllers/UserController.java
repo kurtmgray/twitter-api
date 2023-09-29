@@ -82,7 +82,7 @@ public class UserController {
 
     @GetMapping("/@{username}/tweets")
     public ResponseEntity<List<TweetResponseDto>> getTweets(@PathVariable String username) {
-      return new ResponseEntity<>(userService.getFeed(username), HttpStatus.OK);
+      return new ResponseEntity<>(userService.getTweets(username), HttpStatus.OK);
     }
 
     @GetMapping("/@{username}/mentions")

@@ -8,6 +8,8 @@ import com.cooksys.spring_assessment.mappers.TweetMapper;
 import com.cooksys.spring_assessment.dtos.HashtagDto;
 import com.cooksys.spring_assessment.dtos.TweetResponseDto;
 import com.cooksys.spring_assessment.entities.Tweet;
+import com.cooksys.spring_assessment.entities.Hashtag;
+import com.cooksys.spring_assessment.exceptions.BadRequestException;
 
 import org.springframework.stereotype.Service;
 
@@ -25,12 +27,10 @@ public class HashtagServiceImpl implements HashtagService {
   private final HashtagRepository hashtagRepository;
   private final HashtagMapper hashtagMapper;
   
-  private final TweetRepository tweetRepository;
   private final TweetMapper tweetMapper;
   
   private final Comparator<Tweet> postedDateComparator = (t1, t2) -> t2.getPosted().compareTo(t1.getPosted());
 
-  
   @Override
   public List<HashtagDto> getAllHashtags() {
 	  return hashtagMapper.entitiesToDtos(hashtagRepository.findAll());
@@ -38,12 +38,13 @@ public class HashtagServiceImpl implements HashtagService {
   
   @Override
 	public List<TweetResponseDto> getAllTweetsWithLabel(String label) {
-		Optional<List<Tweet>> getTweets = tweetRepository.findByTweetHashtagsAndDeletedFalse(label);
-		if (!getTweets.isEmpty()) {
-			List<Tweet> labeledTweets = getTweets.get();
-			labeledTweets.sort(postedDateComparator);
-			return tweetMapper.entitiesToDtos(labeledTweets);
-		}
-		return new ArrayList<TweetResponseDto>();
+	  Optional<Hashtag> tag = hashtagRepository.findByLabel(label);
+	  if (tag.isEmpty()) {
+		  throw new BadRequestException("No hashtag with that label exists.");
+	  }
+	  
+		List<Tweet> labeledTweets = tag.get().getTweets();
+		labeledTweets.sort(postedDateComparator);
+		return tweetMapper.entitiesToDtos(labeledTweets);
 	}
 }
