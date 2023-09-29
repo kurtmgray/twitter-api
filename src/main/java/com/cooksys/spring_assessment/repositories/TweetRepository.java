@@ -1,6 +1,7 @@
 package com.cooksys.spring_assessment.repositories;
 
 import com.cooksys.spring_assessment.entities.Tweet;
+import com.cooksys.spring_assessment.entities.User;
 
 import java.util.List;
 import java.util.Optional;
@@ -22,4 +23,8 @@ public interface TweetRepository extends JpaRepository<Tweet, Long> {
     Optional<List<Tweet>> findByTweetHashtagsAndDeletedFalse(String label);
     
     Optional<Set<Tweet>> findByInReplyToAndDeletedFalse(Tweet target);
+    
+    Optional<List<Tweet>> findByAuthorAndDeletedFalse(User author);
+    
+    List<Tweet> findByMentionedUsersAndDeletedFalse(User user);
 }
