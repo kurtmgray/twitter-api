@@ -1,5 +1,6 @@
 package com.cooksys.spring_assessment.services.impl;
 
+//import com.cooksys.spring_assessment.mappers.TweetMapper;
 import com.cooksys.spring_assessment.dtos.*;
 import com.cooksys.spring_assessment.entities.Hashtag;
 import com.cooksys.spring_assessment.entities.Tweet;
@@ -14,8 +15,8 @@ import com.cooksys.spring_assessment.repositories.HashtagRepository;
 import com.cooksys.spring_assessment.repositories.TweetRepository;
 import com.cooksys.spring_assessment.repositories.UserRepository;
 import com.cooksys.spring_assessment.services.TweetService;
-import com.cooksys.spring_assessment.services.UserService;
 
+import com.cooksys.spring_assessment.services.UserService;
 import lombok.RequiredArgsConstructor;
 
 import org.springframework.data.domain.Sort;
@@ -104,6 +105,7 @@ public class TweetServiceImpl implements TweetService {
 		if (!tweet.getUsersWhoLike().contains(user)) {
 			tweet.getUsersWhoLike().add(user);
 		}
+
 		tweetRepository.saveAndFlush(tweet);
 		userRepository.saveAndFlush(user);
 		return;
@@ -115,6 +117,7 @@ public class TweetServiceImpl implements TweetService {
 		if (tweetRequestDto == null || tweetRequestDto.getContent() == null || tweetRequestDto.getCredentials() == null) {
 			throw new BadRequestException("Malformed request.");
 		}
+
 		Tweet tweet = validateTweet(id);
 
 		User user = userService.validateUser(tweetRequestDto.getCredentials());
@@ -277,5 +280,4 @@ public class TweetServiceImpl implements TweetService {
 		}
 		 return afterTweets;
 	}
-
 }

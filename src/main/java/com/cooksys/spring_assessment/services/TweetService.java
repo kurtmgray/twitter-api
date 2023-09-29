@@ -1,6 +1,14 @@
 package com.cooksys.spring_assessment.services;
 
+import com.cooksys.spring_assessment.dtos.*;
+import com.cooksys.spring_assessment.entities.Hashtag;
+import com.cooksys.spring_assessment.entities.User;
+import org.springframework.http.HttpStatus;
+
+import java.util.List;
+
 public interface TweetService {
+    TweetResponseDto createSimpleTweet(TweetRequestDto tweetRequestDto);
 
     List<TweetResponseDto> getAllTweets();
 
@@ -25,5 +33,4 @@ public interface TweetService {
     List<TweetResponseDto> getDirectRepliesToTweet(Long id);
     
     ContextDto getContextToTweet(Long id);
-  
 }
