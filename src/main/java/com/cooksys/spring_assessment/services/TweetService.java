@@ -30,8 +30,6 @@ public interface TweetService {
 
     TweetResponseDto repostTweet(Long id, CredentialsDto credentialsDto);
     
-    List<TweetResponseDto> getAllTweetsWithLabel(String label);
-    
     List<TweetResponseDto> getDirectRepliesToTweet(Long id);
     
     ContextDto getContextToTweet(Long id);

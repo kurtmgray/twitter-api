@@ -36,7 +36,7 @@ import java.util.TreeSet;
 public class TweetServiceImpl implements TweetService {
 
 	private final TweetRepository tweetRepository;
-  private final TweetMapper tweetMapper;
+	private final TweetMapper tweetMapper;
 	private final UserService userService;
 	private final UserMapper userMapper;
 	private final UserRepository userRepository;
@@ -235,16 +235,7 @@ public class TweetServiceImpl implements TweetService {
 		tweetRepository.saveAndFlush(tweet);
 	}
 	
-	public List<TweetResponseDto> getAllTweetsWithLabel(String label) {
-		Optional<List<Tweet>> getTweets = tweetRepository.findByTweetHashtagsAndDeletedFalse(label);
-		if (!getTweets.isEmpty()) {
-			List<Tweet> labeledTweets = getTweets.get();
-			labeledTweets.sort(postedDateComparator);
-			return tweetMapper.entitiesToDtos(labeledTweets);
-		}
-		return new ArrayList<TweetResponseDto>();
-	}
-	
+	@Override
 	public List<TweetResponseDto> getDirectRepliesToTweet(Long id) {
 		Tweet target = validateTweet(id);
 		Optional<Set<Tweet>> getDirectReplies = tweetRepository.findByInReplyToAndDeletedFalse(target);
@@ -255,6 +246,7 @@ public class TweetServiceImpl implements TweetService {
 		return new ArrayList<TweetResponseDto>();
 	}
 	
+	@Override
 	public ContextDto getContextToTweet(Long id) {
 		Tweet target = validateTweet(id);
 		

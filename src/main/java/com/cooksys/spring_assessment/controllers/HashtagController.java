@@ -22,7 +22,6 @@ import lombok.RequiredArgsConstructor;
 public class HashtagController {
 
     private final HashtagService hashtagService;
-    private final TweetService tweetService;
 
     @GetMapping
     public ResponseEntity<List<HashtagDto>> getAllHashTags() {
@@ -31,6 +30,6 @@ public class HashtagController {
 
     @GetMapping("/{label}")
     public ResponseEntity<List<TweetResponseDto>> getAllTweetsWithLabel(@PathVariable String label) {
-    	return new ResponseEntity<>(tweetService.getAllTweetsWithLabel(label), HttpStatus.OK);
+    	return new ResponseEntity<>(hashtagService.getAllTweetsWithLabel(label), HttpStatus.OK);
     }
 }
