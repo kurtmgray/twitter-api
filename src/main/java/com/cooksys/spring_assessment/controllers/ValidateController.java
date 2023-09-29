@@ -32,4 +32,5 @@ public class ValidateController {
     public ResponseEntity<Boolean> validateUsernameAvailability(@PathVariable String username) {
     	return new ResponseEntity<>(!validateService.validateUsername(username), HttpStatus.OK);
     }
+
 }

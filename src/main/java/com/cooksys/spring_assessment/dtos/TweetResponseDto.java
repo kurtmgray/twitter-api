@@ -3,9 +3,6 @@ package com.cooksys.spring_assessment.dtos;
 
 import java.sql.Timestamp;
 
-import com.cooksys.spring_assessment.entities.Tweet;
-
-import com.cooksys.spring_assessment.entities.User;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;

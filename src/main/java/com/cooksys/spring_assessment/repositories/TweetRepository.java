@@ -19,12 +19,11 @@ public interface TweetRepository extends JpaRepository<Tweet, Long> {
     List<Tweet> findByDeletedFalse(Sort sort);
 
     Optional<Tweet> findByIdAndDeletedFalse(Long id);
-    
-    Optional<List<Tweet>> findByTweetHashtagsLabelAndDeletedFalse(String label);
-    
+
     Optional<Set<Tweet>> findByInReplyToAndDeletedFalse(Tweet target);
     
     Optional<List<Tweet>> findByAuthorAndDeletedFalse(User author);
     
     List<Tweet> findByMentionedUsersAndDeletedFalse(User user);
+
 }

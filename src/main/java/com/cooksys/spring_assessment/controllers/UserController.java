@@ -20,42 +20,31 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
-
-
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/users")
 public class UserController {
 
-
-
-
-
-
     private final UserService userService;
-
 
     @GetMapping()
     public ResponseEntity<UserResponseDto[]> getUsers() {
-      return new ResponseEntity<>((userService.getAllUsers()), HttpStatus.OK);
+      return new ResponseEntity<>(userService.getAllUsers(), HttpStatus.OK);
     }
-
-    
 
     @PostMapping
     public ResponseEntity<UserResponseDto> createUser(@RequestBody UserRequestDto userRequestDto) {
         return new ResponseEntity<>(userService.createUser(userRequestDto), HttpStatus.CREATED);
     }
 
-
     @GetMapping("/@{username}")
     public ResponseEntity<UserResponseDto> getSpecificUser(@PathVariable String username) {
       return new ResponseEntity<>(userService.getSpecificUser(username),  HttpStatus.OK);
     }
-    //userRequestDto
+
     @PatchMapping("/@{username}")
     public ResponseEntity<UserResponseDto> updateUser(@RequestBody UserRequestDto userRequestDto, @PathVariable String username) {
-      return new ResponseEntity<>((userService.updateUser(userRequestDto, username)), HttpStatus.OK);
+      return new ResponseEntity<>(userService.updateUser(userRequestDto, username), HttpStatus.OK);
     }
 
     @DeleteMapping("/@{username}")
@@ -99,25 +88,5 @@ public class UserController {
     public ResponseEntity<List<UserResponseDto>> getFollowing(@PathVariable String username) {
       return new ResponseEntity<>(userService.getFollowing(username), HttpStatus.OK);
     }
-
-
-
-
-    
-
-
-
-    
-
-
-
-
-
-
-
-
-
-
-
 
 }

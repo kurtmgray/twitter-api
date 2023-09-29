@@ -12,8 +12,6 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     Optional<User> findByCredentialsUsernameAndCredentialsPassword(String username, String password);
 
-    List<User> findByLikesIdAndDeletedFalse(Long tweetId);
-
     Optional<User> findByCredentialsUsername(String username);
 
     List<User> findByFollowersAndDeletedFalse(User user);

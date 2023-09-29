@@ -7,7 +7,7 @@ import org.mapstruct.Mapper;
 import java.util.List;
 
 @Mapper(componentModel = "spring")
-
 public interface HashtagMapper {
+
     List<HashtagDto> entitiesToDtos(List<Hashtag> tweetHashtags);
 }

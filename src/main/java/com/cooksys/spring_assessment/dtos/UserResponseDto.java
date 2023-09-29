@@ -1,12 +1,10 @@
 package com.cooksys.spring_assessment.dtos;
 
-
 import java.sql.Timestamp;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
-
 
 @NoArgsConstructor
 @Data
