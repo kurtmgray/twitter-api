@@ -118,6 +118,7 @@ public class UserServiceImpl implements UserService {
         if (u1.isEmpty() || u2.isEmpty()) {
             throw new BadRequestException("empty");
         }
+        //testing
 
         User user1 = u1.get();
         User user2 = u2.get();
