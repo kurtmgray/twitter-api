@@ -22,6 +22,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -217,7 +218,10 @@ public class TweetServiceImpl implements TweetService {
 				List<Tweet> hashtagTweets = updatedHashtag.getTweets();
 				hashtagTweets.add(tweet);
 				updatedHashtag.setTweets(hashtagTweets);
+				updatedHashtag.setLastUsed(new Timestamp(System.currentTimeMillis()));
+
 				hashtagRepository.saveAndFlush(updatedHashtag);
+				hashtagEntities.add(updatedHashtag);
 			} else {
 				Hashtag newHashtag = new Hashtag();
 				newHashtag.setLabel(label);

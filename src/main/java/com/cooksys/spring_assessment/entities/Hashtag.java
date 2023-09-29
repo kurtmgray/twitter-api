@@ -35,6 +35,4 @@ public class Hashtag {
     @ManyToMany(mappedBy = "tweetHashtags")
     private List<Tweet> tweets;
 
-
-
 }
