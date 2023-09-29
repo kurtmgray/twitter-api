@@ -43,7 +43,7 @@ public class TweetServiceImpl implements TweetService {
 	private final HashtagRepository hashtagRepository;
 	private final HashtagMapper hashtagMapper;
 	
-	private final Comparator<Tweet> postedDateComparator = (t1, t2) -> t1.getPosted().compareTo(t2.getPosted());
+	private final Comparator<Tweet> postedDateComparator = (t1, t2) -> t2.getPosted().compareTo(t1.getPosted());
 
 	@Override
 	public List<TweetResponseDto> getAllTweets() {
@@ -261,7 +261,7 @@ public class TweetServiceImpl implements TweetService {
 		ContextDto context = new ContextDto();
 		context.setTarget(tweetMapper.entityToDto(target));
 		context.setBefore(tweetMapper.entitiesToDtos(createContextBefore(target)));
-		context.setAfter(tweetMapper.entitiesToDtos(createContextAfter(target, new TreeSet<Tweet>(postedDateComparator))));
+		context.setAfter(tweetMapper.entitiesToDtos(new ArrayList<Tweet>((createContextAfter(target, new TreeSet<Tweet>(postedDateComparator))))));
 		
 		return context;
 	}
@@ -275,20 +275,17 @@ public class TweetServiceImpl implements TweetService {
 	 	return beforeTweets;
 	 }
 	
-	 private List<Tweet> createContextAfter(Tweet target, SortedSet<Tweet> afterTweets) {
-		if (target == null) return new ArrayList<Tweet>();
-		 
+	 private SortedSet<Tweet> createContextAfter(Tweet target, SortedSet<Tweet> afterTweets) {
 		Optional<Set<Tweet>> getReplies = tweetRepository.findByInReplyTo(target);
 		
 		if (!getReplies.isEmpty()) {
-			Set<Tweet> replies = getReplies.get();
-			for (Tweet t : replies) {
-				if (!t.getDeleted()) afterTweets.add(t);
-				return createContextAfter(t, afterTweets);
+			for (Tweet t : getReplies.get()) {
+				if (!t.getDeleted()) {
+					afterTweets.add(t);
+				}
+				createContextAfter(t, afterTweets);
 			}
 		}
-		
-		return createContextAfter(null, null);
-	 }
-
+		 return afterTweets;
+	}
 }
