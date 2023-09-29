@@ -4,26 +4,34 @@ import com.cooksys.spring_assessment.dtos.CredentialsDto;
 import com.cooksys.spring_assessment.dtos.TweetResponseDto;
 import com.cooksys.spring_assessment.dtos.UserRequestDto;
 import com.cooksys.spring_assessment.dtos.UserResponseDto;
+import com.cooksys.spring_assessment.entities.Credentials;
 import com.cooksys.spring_assessment.entities.Tweet;
 import com.cooksys.spring_assessment.entities.User;
-import com.cooksys.spring_assessment.entities.Credentials;
 import com.cooksys.spring_assessment.exceptions.BadRequestException;
 import com.cooksys.spring_assessment.exceptions.NotAuthorizedException;
 import com.cooksys.spring_assessment.exceptions.NotFoundException;
 import com.cooksys.spring_assessment.repositories.UserRepository;
 import com.cooksys.spring_assessment.services.UserService;
+import com.cooksys.spring_assessment.services.ValidateService;
 import com.cooksys.spring_assessment.repositories.TweetRepository;
 
+import java.sql.Timestamp;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 
+import javax.persistence.EntityNotFoundException;
+
+import org.springframework.boot.autoconfigure.data.web.SpringDataWebProperties.Sort;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import com.cooksys.spring_assessment.mappers.CredentialsMapper;
 import com.cooksys.spring_assessment.mappers.TweetMapper;
 import com.cooksys.spring_assessment.mappers.UserMapper;
-import com.cooksys.spring_assessment.mappers.CredentialsMapper;
 
 import lombok.RequiredArgsConstructor;
+import net.bytebuddy.implementation.bytecode.Throw;
 
 
 
@@ -32,23 +40,10 @@ import lombok.RequiredArgsConstructor;
 public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final UserMapper userMapper;
+    private final ValidateService validateService;
     private final TweetMapper tweetMapper;
     private final TweetRepository tweetRepository;
     private final CredentialsMapper credentialsMapper;
-
-    public User validateUser(CredentialsDto credentialsDto) throws BadRequestException, NotAuthorizedException {
-        if (credentialsDto == null || credentialsDto.getUsername() == null || credentialsDto.getPassword() == null) {
-            throw new BadRequestException("Both username and password are required.");
-        }
-        Credentials credentials = credentialsMapper.dtoToEntity(credentialsDto);
-        Optional<User> optionalUser = userRepository.findByCredentialsUsernameAndCredentialsPassword(credentials.getUsername(), credentials.getPassword());
-
-        if (optionalUser.isEmpty()) {
-            throw new NotAuthorizedException("Invalid credentials.");
-        }
-
-        return optionalUser.get();
-    }
 
 
     @Override
@@ -66,7 +61,7 @@ public class UserServiceImpl implements UserService {
 
 
         System.out.println("everything went right up to return ");
-        return (userMapper.uentitiesToDtos(ret));
+        return (userMapper.entitiesToDtosA(ret));
        
         
     }
@@ -74,35 +69,28 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserResponseDto createUser(UserRequestDto userRequestDto) {
-
-        
-
         if (userRequestDto == null || userRequestDto.getCredentials() == null || userRequestDto.getCredentials().getUsername() == null || 
         userRequestDto.getProfile() == null ||userRequestDto.getProfile().getEmail() == null || userRequestDto.getCredentials().getPassword() == null) {
             throw new BadRequestException("invalid input");
         }
-        
-
-        User user = userMapper.urequestToEntity(userRequestDto);
+        User user = userMapper.requestToEntity(userRequestDto);
         Optional<User> o = userRepository.findByCredentialsUsername(user.getCredentials().getUsername());
         if (o.isPresent()) {
-            if (o.get().isDeleted()) {
-                o.get().setDeleted(false);
-                userRepository.saveAndFlush(o.get());
+            System.out.println("checking if readded");
+            User m = o.get();
+            System.out.println("checking if get");
+            if (m.isDeleted()) {
+                System.out.println("readded");
+                m.setDeleted(false);
+                userRepository.saveAndFlush(m);
+                return userMapper.entityToDto(m);
             }
-            else {
-                throw new BadRequestException("user already there");
-            }
+            System.out.println("chcecking if error");
+            throw new BadRequestException("can't readd again");
         }
-        
-
-        
-
-        userRepository.saveAndFlush(user);
-        
-
-       
-        return userMapper.userToUserResponseDto(user);
+        System.out.println("executed");
+        userRepository.saveAndFlush(user); 
+        return userMapper.entityToDto(user);
     }
 
 
@@ -118,41 +106,54 @@ public class UserServiceImpl implements UserService {
             throw new NotFoundException("not found");
         }
         System.out.println(u.get().getTweets().size());
-        return userMapper.userToUserResponseDto(u.get());
+        return userMapper.entityToDto(u.get());
     }
 
 
     @Override
     public UserResponseDto updateUser(UserRequestDto userRequestDto, String username) {
+        if (userRequestDto.getCredentials() == null || userRequestDto.getCredentials().getPassword() == null || 
+        userRequestDto.getCredentials().getUsername() == null) {
+            throw new BadRequestException("empty");
+        }
+        Optional<User> u1= userRepository.findByCredentialsUsernameAndCredentialsPassword(userRequestDto.getCredentials().getUsername(), 
+        userRequestDto.getCredentials().getPassword());
 
-        if (username == null) {
-            throw new BadRequestException("null");
+        Optional<User> u2 = userRepository.findByCredentialsUsername(username);
+
+        if (u1.isEmpty() || u2.isEmpty()) {
+            throw new BadRequestException("empty");
         }
 
-        if (userRequestDto == null || userRequestDto.getCredentials() == null || userRequestDto.getCredentials().getUsername() == null || 
-        userRequestDto.getProfile() == null ||userRequestDto.getProfile().getEmail() == null || userRequestDto.getCredentials().getPassword() == null) {
-            throw new BadRequestException("invalid input");
-        }
-        Optional<User> u = userRepository.findByCredentialsUsername(username);
-        if (!u.isPresent()) {
-            throw new NotFoundException("not found");
-        }
-        User user = u.get();
-        if (user.isDeleted()) {
-            throw new NotFoundException("not found");
+        User user1 = u1.get();
+        User user2 = u2.get();
+
+        if (!user1.getCredentials().getPassword().equals(user2.getCredentials().getPassword()) && 
+        user1.getCredentials().getUsername().equals(user2.getCredentials().getUsername())) {
+            throw new BadRequestException("credentials dont match");
         }
 
-        User check = userMapper.urequestToEntity(userRequestDto);
-
-        Optional<User> o = userRepository.findByCredentialsUsernameAndCredentialsPassword(check.getCredentials().getUsername(), 
-        check.getCredentials().getPassword());
-
-        if (o.isEmpty()) {
-            throw new BadRequestException("invalid credentials");
+        if (userRequestDto.getProfile() == null) {
+            throw new BadRequestException("given profile is null");
         }
-        user.getCredentials().setUsername(username);
-        userRepository.saveAndFlush(user);
-        return userMapper.userToUserResponseDto(user);
+
+        if (userRequestDto.getProfile().getEmail() != null) {
+            user2.getProfile().setEmail(userRequestDto.getProfile().getEmail());
+        }
+        if (userRequestDto.getProfile().getFirstName() != null) {
+            user2.getProfile().setFirstName(userRequestDto.getProfile().getFirstName());
+        }
+        if (userRequestDto.getProfile().getLastName() != null) {
+            user2.getProfile().setLastName(userRequestDto.getProfile().getLastName());
+        }
+        if (userRequestDto.getProfile().getPhone() != null) {
+            user2.getProfile().setPhone(userRequestDto.getProfile().getPhone());
+        }
+        userRepository.saveAndFlush(user2);
+        return userMapper.entityToDto(user2);
+
+        
+        
     }
 
 
@@ -173,7 +174,7 @@ public class UserServiceImpl implements UserService {
         user.setDeleted(true);
         System.out.println(user.isDeleted());
         userRepository.saveAndFlush(user);
-        return userMapper.userToUserResponseDto(user);
+        return userMapper.entityToDto(user);
     }
 
 
@@ -227,7 +228,7 @@ public class UserServiceImpl implements UserService {
         Optional<User> uFollow = userRepository.findByCredentialsUsername(username);
 
         if (!uFollow.isPresent() || uFollow.get().isDeleted()) {
-            throw new BadRequestException("not there");
+            return;
         }
 
         User user2 = uFollow.get();
@@ -253,7 +254,7 @@ public class UserServiceImpl implements UserService {
         for (User uf : user.getFollowers()) {
             tweets.addAll(uf.getTweets());
         }
-        tweets.removeIf(n -> (n.getDeleted()));
+        tweets.removeIf(n -> (n.isDeleted()));
         tweets.sort((t2, t1)-> t1.getPosted().compareTo(t2.getPosted())); 
         return tweetMapper.entitiesToDtos(tweets);
 
@@ -269,7 +270,7 @@ public class UserServiceImpl implements UserService {
         }
         User user = u.get();
         List<Tweet> tweets = user.getTweets();
-        tweets.removeIf(n -> (n.getDeleted()));
+        tweets.removeIf(n -> (n.isDeleted()));
         tweets.sort((t1, t2)-> t1.getPosted().compareTo(t2.getPosted())); 
         return tweetMapper.entitiesToDtos(tweets);
     }
@@ -316,6 +317,22 @@ public class UserServiceImpl implements UserService {
         }
         User user = u.get();
         return userMapper.entitiesToDtos(user.getFollowing());
+    }
+
+
+    @Override
+    public User validateUser(CredentialsDto credentialsDto) throws BadRequestException, NotAuthorizedException {
+        if (credentialsDto == null || credentialsDto.getUsername() == null || credentialsDto.getPassword() == null) {
+            throw new BadRequestException("Both username and password are required.");
+        }
+        Credentials credentials = credentialsMapper.dtoToEntity(credentialsDto);
+        Optional<User> optionalUser = userRepository.findByCredentialsUsernameAndCredentialsPassword(credentials.getUsername(), credentials.getPassword());
+
+        if (optionalUser.isEmpty()) {
+            throw new NotAuthorizedException("Invalid credentials.");
+        }
+
+        return optionalUser.get();
     }
 
     
